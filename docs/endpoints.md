@@ -2,23 +2,29 @@
 
 ### `employees/`
 
-| method |     description.      | example response |
+| method |     description      | example response |
 |--------|-----------------------|------------------|
 | [GET]  | list of all employees | <pre>[<br />  {<br />    "id": 1,<br />    "name": "Yakov Varnaev"<br />  }<br />]</pre>|
 | [POST] | create an employee | <pre>{<br />  "id": 1,<br />  "name": "Yakov Varnaev"<br />}</pre> |
 
 ### `employees/{id}/`
 
-| method |     description.      | example response |
+| method |     description       | example response |
 |--------|-----------------------|------------------|
 | [GET] | detail data for employee | <pre>{<br />  "id": 1,<br />  "name": "Yakov Varnaev"<br />  "procedures": []<br />}</pre> |
 | [PUT/PATCH] | update employee data | <pre>{<br />  "id": 1,<br />  "name": "Yakov Varnaev"<br />}</pre> |
 
 ### `employees/{id}/procedures/`
-[GET] : list of all employees procedures
+
+| method |     description       | example response |
+|--------|-----------------------|------------------|
+| [GET]  | list of all employees procedures | <pre>[]</pre> |
 
 ### `materials/`
-[GET] : list of all materials
+
+| method |     description       | example response |
+|--------|-----------------------|------------------|
+| [GET]  | list of all materials | <pre>[<br />  {<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />  }<br />]</pre> |
 
 [POST] : create a material
 
