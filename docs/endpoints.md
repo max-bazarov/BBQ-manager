@@ -18,7 +18,7 @@
 
 | method |     description       | example response |
 |--------|-----------------------|------------------|
-| [GET]  | list of all employees procedures | <pre>[]</pre> |
+| [GET]  | list of all employees procedures | <pre>[<br />  {<br />    "id": 1,<br />    "name": "Hair Coloring"<br />  }<br />]</pre> |
 
 ### `materials/`
 
@@ -32,17 +32,21 @@
 | method |     description       | example response |
 |--------|-----------------------|------------------|
 | [GET] | detail data for material | <pre>{<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />}</pre> |
-| [PUT<br />PATCH] | update material data <br />[price must not be <br />updated if this was used already] | <pre>{<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />}</pre> |
+| [PUT/PATCH] | update material data <br />[price must not be <br />updated if this was used already] | <pre>{<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />}</pre> |
 
 ### `procedures/`
-[GET] : list of all procedures
 
-[POST] : create a procedure
+| method |     description      | example response |
+|--------|-----------------------|------------------|
+| [GET]  | list of all procedures | <pre>[<br />  {<br />    "id": 1,<br />    "name": "Hair Coloring"<br />  }<br />]</pre>|
+| [POST] | create a procedure | <pre>{<br />  "id": 1,<br />  "name": "Hair Coloring"<br />}</pre> |
 
 ### `procedures/{id}/`
-[GET] : detail data for procedure
 
-[PUT/PATCH] : update procedure data
+| method |     description      | example response |
+|--------|-----------------------|------------------|
+| [GET]  | get procedure detail | <pre>{<br />  "id": 1,<br />  "name": "Hair Coloring"<br />}</pre>|
+| [PUT/PATCH] | update a procedure | <pre>{<br />  "id": 1,<br />  "name": "Hair Coloring"<br />}</pre> 
 
 ### `purchaces/`
 [GET] : list of all purchaces
