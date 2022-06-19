@@ -25,8 +25,7 @@
 | method |     description       | example response |
 |--------|-----------------------|------------------|
 | [GET]  | list of all materials | <pre>[<br />  {<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />  }<br />]</pre> |
-
-[POST] : create a material
+| [POST] | create a material     | <pre>{<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />  }</pre> |
 
 ### `materials/{id}/`
 [GET] : detail data for material
