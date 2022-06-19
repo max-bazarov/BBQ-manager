@@ -3,9 +3,9 @@
 ### `employees/`
 
 | method | description | example response |
-[GET] | list of all employees | [] |
-
-[POST] : create an employee
+----------------------------------------
+| [GET] | list of all employees | [] |
+| [POST] | create an employee | {} |
 
 ### `employees/{id}/`
 [GET] : detail data for employee
