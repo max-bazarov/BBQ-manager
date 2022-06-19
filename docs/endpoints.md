@@ -4,7 +4,7 @@
 
 | method |     description.      | example response |
 |--------|-----------------------|------------------|
-| [GET]  | list of all employees | [{"id": 1, "name": "Yakov Varnaev"}] |
+| [GET]  | list of all employees | [\n{\n"id": 1,\n"name": "Yakov Varnaev"\n}\n] |
 | [POST] | create an employee | {"id": 1, "name": "Yakov Varnaev"} |
 
 ### `employees/{id}/`
