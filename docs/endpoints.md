@@ -4,18 +4,18 @@
 [GET] : list of all employees
 [POST] : create an employee
 
-## `employees/{id}/`
+### `employees/{id}/`
 [GET] : detail data for employee
 [PUT/PATCH] : update employee data
 
-## `employees/{id}/procedures/`
+### `employees/{id}/procedures/`
 [GET] : list of all employees procedures
 
 ### `materials/`
 [GET] : list of all materials
 [POST] : create a material
 
-## `materials/{id}/`
+### `materials/{id}/`
 [GET] : detail data for material
 [PUT/PATCH] : update material data [price must not be updated if this was used already]
 
@@ -23,7 +23,7 @@
 [GET] : list of all procedures
 [POST] : create a procedure
 
-## `procedures/{id}/`
+### `procedures/{id}/`
 [GET] : detail data for procedure
 [PUT/PATCH] : update procedure data
 
@@ -31,10 +31,10 @@
 [GET] : list of all purchaces
 [POST] : create a purchace
 
-## `purchaces/{id}/`
+### `purchaces/{id}/`
 [GET] : detail data for puchace
 [PUT/PATCH] : update purchace data
 [DELETE] : delete purchace
 
-## `stats/?year={year}&month={month}&day={day}`
+### `stats/?year={year}&month={month}&day={day}`
 [GET] : get stats for a certain day/month/year
