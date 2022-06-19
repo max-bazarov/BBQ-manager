@@ -17,8 +17,9 @@ Fields:
 - name
 - unit
 - price
+- archived
 
-The `Material` model represents the material used during the procedure. Some procedures require a different amount of materials, e.g. coloring long hairs take more materials than coloring short hairs.
+The `Material` model represents the material used during the procedure. Some procedures require a different amount of materials, e.g. coloring long hairs take more materials than coloring short hairs. If price of the material is changed, we should not update material price, because it will affect historic data. So, new material should be created and old one should be archived.
 
 ## EmployeeProcedure
 Fields:
