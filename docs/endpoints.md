@@ -24,13 +24,15 @@
 
 | method |     description       | example response |
 |--------|-----------------------|------------------|
-| [GET]  | list of all materials | <pre>[<br />  {<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />  }<br />]</pre> |
-| [POST] | create a material     | <pre>{<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />  }</pre> |
+| [GET]  | list of all materials | <pre>[<br />  {<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />  }<br />]</pre>
+| [POST] | create a material | <pre>{<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />}</pre> |
 
 ### `materials/{id}/`
-[GET] : detail data for material
 
-[PUT/PATCH] : update material data [price must not be updated if this was used already]
+| method |     description       | example response |
+|--------|-----------------------|------------------|
+| [GET] | detail data for material | <pre>{<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />}</pre> |
+| [PUT<br />PATCH] | update material data <br />[price must not be <br />updated if this was used already] | <pre>{<br />    "name": "Ginger Hair Color",<br />    "unit": "g",<br />    "price": 4<br />}</pre> |
 
 ### `procedures/`
 [GET] : list of all procedures
