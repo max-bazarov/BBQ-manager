@@ -4,13 +4,15 @@
 
 | method |     description.      | example response |
 |--------|-----------------------|------------------|
-| [GET]  | list of all employees | <pre>[<br />  {<br />    "id": 1,<br />&nbsp&nbsp"name": "Yakov Varnaev"<br />  }<br />]</pre>|
+| [GET]  | list of all employees | <pre>[<br />  {<br />    "id": 1,<br />    "name": "Yakov Varnaev"<br />  }<br />]</pre>|
 | [POST] | create an employee | <pre>{<br />  "id": 1,<br />  "name": "Yakov Varnaev"<br />}</pre> |
 
 ### `employees/{id}/`
-[GET] : detail data for employee
 
-[PUT/PATCH] : update employee data
+| method |     description.      | example response |
+|--------|-----------------------|------------------|
+| [GET] | detail data for employee | <pre>{<br />  "id": 1,<br />  "name": "Yakov Varnaev"<br />  "procedures": []<br />}</pre> |
+| [PUT/PATCH] | update employee data | <pre>{<br />  "id": 1,<br />  "name": "Yakov Varnaev"<br />}</pre> |
 
 ### `employees/{id}/procedures/`
 [GET] : list of all employees procedures
