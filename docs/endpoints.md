@@ -4,8 +4,8 @@
 
 | method |     description.      | example response |
 |--------|-----------------------|------------------|
-| [GET]  | list of all employees | [<br />{<br />"id": 1,<br />"name": "Yakov Varnaev"<br />}<br />] |
-| [POST] | create an employee | {<br />"id": 1,<br />"name": "Yakov Varnaev"<br />} |
+| [GET]  | list of all employees | `[<br />&nbsp{<br />&nbsp&nbsp"id": 1,<br />&nbsp&nbsp"name": "Yakov Varnaev"<br />&nbsp}<br />]` |
+| [POST] | create an employee | {<br />&nbsp"id": 1,<br />&nbsp"name": "Yakov Varnaev"<br />} |
 
 ### `employees/{id}/`
 [GET] : detail data for employee
