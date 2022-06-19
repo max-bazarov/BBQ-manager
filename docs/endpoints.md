@@ -2,9 +2,9 @@
 
 ### `employees/`
 
-| method | description | example response |
-----------------------------------------
-| [GET] | list of all employees | [] |
+| method |     description.      | example response |
+|--------|-----------------------|------------------|
+| [GET]  | list of all employees | [] |
 | [POST] | create an employee | {} |
 
 ### `employees/{id}/`
