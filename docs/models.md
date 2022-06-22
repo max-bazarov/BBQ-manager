@@ -4,13 +4,13 @@
 Fields:
 - name
 
-Model `Employee` will represent BBQ's employees.
+Model `Employee` represents BBQ's employees.
 
 ## Procedure
 Fields: 
 - name
 
-The `Procedure` model will just contain its name.
+The `Procedure` model contains procedure's name.
 
 ## Material
 Fields:
