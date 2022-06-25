@@ -8,4 +8,7 @@ In the end of the day manager should see how much money should saloon give to ma
 
 ## Run project locally
 
-...
+**Instructions to run project locally**
+
+* Commands
+* Env vars
