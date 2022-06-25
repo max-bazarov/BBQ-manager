@@ -11,7 +11,7 @@
 
 | method |     description       | example response |
 |--------|-----------------------|------------------|
-| [GET] | detail data for employee | <pre>{<br />  "id": 1,<br />  "name": "Yakov Varnaev"<br />  "procedures": []<br />}</pre> |
+| [GET] | detail data for employee | <pre>{<br />  "id": 1,<br />  "name": "Yakov Varnaev"<br />  "procedures": [<br />    {<br />      "id": 1,<br />      "name": "Hair Coloring"<br />    }<br />  ]</pre><br />}</pre> |
 | [PUT/PATCH] | update employee data | <pre>{<br />  "id": 1,<br />  "name": "Yakov Varnaev"<br />}</pre> |
 
 ### `employees/{id}/procedures/`
@@ -49,16 +49,17 @@
 | [PUT/PATCH] | update a procedure | <pre>{<br />  "id": 1,<br />  "name": "Hair Coloring"<br />}</pre> 
 
 ### `purchaces/`
-[GET] : list of all purchaces
-
-[POST] : create a purchace
+| method |     description      | example response |
+|--------|-----------------------|------------------|
+| [GET] | list of all purchaces | <pre>[<br />  {<br />    "date": "2022-06-25T11:57:02+0000",<br />    "is_paid_by_card": false,<br />    "procedure": {<br />      "name": "Haircut",<br />      "price": 1100, <br />      "id": 1<br />    },<br />    "master": {<br />      "id": 1,<br />      "name": "Yakov Varnaev" <br />    }<br />  }<br />]</pre> |
+| [POST] | create a purchase |<pre>{<br />  "date": "2022-06-25T11:57:02+0000",<br />  "is_paid_by_card": false,<br />  "procedure": {<br />    "name": "Haircut",<br />    "price": 1100, <br />    "id": 1<br />  },<br />  "master": {<br />    "id": 1,<br />    "name": "Yakov Varnaev" <br />  }<br />}</pre> |
 
 ### `purchaces/{id}/`
-[GET] : detail data for puchace
-
-[PUT/PATCH] : update purchace data
-
-[DELETE] : delete purchace
+| method |     description      | example response |
+|--------|-----------------------|------------------|
+| [GET] | get purchase detail |<pre>{<br />  "date": "2022-06-25T11:57:02+0000",<br />  "is_paid_by_card": false,<br />  "procedure": {<br />    "name": "Haircut",<br />    "price": 1100, <br />    "id": 1<br />  },<br />  "master": {<br />    "id": 1,<br />    "name": "Yakov Varnaev" <br />  }<br />}</pre> |
+| [PUT/PATCH] | update purchace detail |<pre>{<br />  "date": "2022-06-25T11:57:02+0000",<br />  "is_paid_by_card": false,<br />  "procedure": {<br />    "name": "Haircut",<br />    "price": 1100, <br />    "id": 1<br />  },<br />  "master": {<br />    "id": 1,<br />    "name": "Yakov Varnaev" <br />  }<br />}</pre> |
+| [DELETE] | delete purchace | <pre>{"id": 1}</pre> |
 
 ### `stats/?year={year}&month={month}&day={day}`
 [GET] : get stats for a certain day/month/year
