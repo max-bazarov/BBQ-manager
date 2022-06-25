@@ -4,18 +4,21 @@
 
 ## Employee
 Fields:
+- id
 - name
 
 Model `Employee` represents BBQ's employees.
 
 ## Procedure
 Fields: 
+- id
 - name
 
 The `Procedure` model contains procedure's name.
 
 ## Material
 Fields:
+- id
 - name
 - unit
 - price
@@ -25,6 +28,7 @@ The `Material` model represents the material used during the procedure. Some pro
 
 ## EmployeeProcedure
 Fields:
+- id
 - employee
 - procedure
 - price
@@ -36,6 +40,7 @@ and the other 500 goes to the saloon. Flag archived shows if procedure is archiv
 
 ## Purchase
 Fields:
+- id
 - time
 - procedure
 - is_paid_by_card
@@ -44,6 +49,7 @@ The `Purchase` model represents a customer visit to the saloon.
 
 ## UsedMaterials
 Fields:
+- id
 - material
 - purchase
 The `UsedMaterials` model represents a connection between purchase and materials used during the procedure.
