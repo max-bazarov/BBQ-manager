@@ -1,5 +1,7 @@
 # Models description
 
+![alt text](https://github.com/Yakov-Varnaev/BBQ-manager/blob/main/docs/BBQ%20db.png?raw=true)
+
 ## Employee
 Fields:
 - name
