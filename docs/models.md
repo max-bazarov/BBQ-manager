@@ -13,6 +13,7 @@ Model `Employee` represents BBQ's employees.
 Fields: 
 - id
 - name
+- coef (default coef for procedure)
 
 The `Procedure` model contains procedure's name.
 
