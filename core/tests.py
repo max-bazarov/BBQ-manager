@@ -10,4 +10,3 @@ class BaseCreateServiceTests:
         assert isinstance(instance, self.model), (
             f'{self.create_service.__class__.__name__} create method does not return instance'
         )
-

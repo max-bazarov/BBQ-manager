@@ -6,4 +6,3 @@ class ArchiveMixin(models.Model):
         'is archived',
         default=False
     )
-

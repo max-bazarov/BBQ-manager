@@ -7,7 +7,7 @@ from .models import Procedure
 from .services import ProcedureCreateService
 
 
-
+@pytest.mark.django_db
 class TestProcedureServices(TestCase, BaseCreateServiceTests):
 
     @classmethod
@@ -19,4 +19,3 @@ class TestProcedureServices(TestCase, BaseCreateServiceTests):
         cls.data = {
             'name': 'test'
         }
-

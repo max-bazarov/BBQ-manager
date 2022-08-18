@@ -26,4 +26,3 @@ class Material(models.Model):
         'is_archived',
         default=False
     )
-

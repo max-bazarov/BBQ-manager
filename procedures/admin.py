@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Procedure
+
+
+@admin.register(Procedure)
+class ProcedureAdmin(admin.ModelAdmin):
+    pass

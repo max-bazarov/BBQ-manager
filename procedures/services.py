@@ -12,4 +12,3 @@ class ProcedureCreateService(Service, ProcedureServiceFields):
 
     def process(self):
         return Procedure.objects.create(**self.cleaned_data)
-

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django import forms
 from service_objects.services import Service
 
@@ -14,4 +12,3 @@ class MaterialServiceCreate(Service):
 
     def process(self) -> Material:
         return Material.objects.create(**self.cleaned_data)
-        
