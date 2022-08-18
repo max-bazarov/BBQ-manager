@@ -1,22 +1,29 @@
 import pytest
+from decimal import Decimal, getcontext
 
 from django.test import TestCase
 
-from core.tests import BaseCreateServiceTests
+from core.tests import BaseCreateServiceTest, BaseDestroyServiceTest
 from .models import Material, MaterialUnits
-from .services import MaterialServiceCreate
+from .services import MaterialCreateService, MaterialDestroyService
 
 
 @pytest.mark.django_db
-class TestMaterialCreateService(TestCase, BaseCreateServiceTests):
+class TestMaterialCreateService(TestCase,
+                                BaseCreateServiceTest,
+                                BaseDestroyServiceTest):
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.model = Material
-        cls.create_service = MaterialServiceCreate
+        cls.create_service = MaterialCreateService
+        cls.destroy_service = MaterialDestroyService
+
+        getcontext().prec = 2
         cls.data = {
             'name': 'Hair Color',
-            'price': 1.11,
+            'price': Decimal('1.11'),
             'unit': MaterialUnits.GRAMMS.value
         }
+        cls.instance = Material.objects.create(**cls.data)
