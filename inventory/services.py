@@ -16,5 +16,6 @@ class BaseMaterialService(Service):
 class MaterialCreateService(ModelCreateService, BaseMaterialService):
     model = Material
 
+
 class MaterialDestroyService(ModelDestroyService):
     model = Material

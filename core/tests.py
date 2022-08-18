@@ -13,6 +13,7 @@ class BaseCreateServiceTest:
         for k, v in self.data.items():
             assert v == getattr(instance, k)
 
+
 class BaseDestroyServiceTest:
 
     def test_destroy(self):

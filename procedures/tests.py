@@ -1,8 +1,8 @@
 import pytest
-
 from django.test import TestCase
 
 from core.tests import BaseCreateServiceTest, BaseDestroyServiceTest
+
 from .models import Procedure
 from .services import ProcedureCreateService, ProcedureDestroyService
 
