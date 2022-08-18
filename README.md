@@ -12,3 +12,11 @@ In the end of the day manager should see how much money should saloon give to ma
 
 * Commands
 * Env vars
+
+## Migrations
+
+All migrations must be named properly:
+
+```
+python3 manage.py makemigration -n 'humanreadable_name'
+```
