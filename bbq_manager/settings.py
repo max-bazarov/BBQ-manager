@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'core',
     'users',
     'inventory',
-    'employee',
+    'employees',
     'procedures',
 ]
 
