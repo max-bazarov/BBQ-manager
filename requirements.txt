@@ -30,7 +30,6 @@ py==1.11.0
 pycodestyle==2.9.1
 pyflakes==2.5.0
 pylint==2.14.5
-pynvim==0.4.3
 pyparsing==3.0.9
 pytest==7.1.2
 pytest-django==4.5.2
