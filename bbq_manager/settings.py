@@ -68,7 +68,18 @@ WSGI_APPLICATION = 'bbq_manager.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': 'localhost',
+        'PORT': 54321,
+        'USER': 'po',
+        'PASSWORD': 'example',
+        'NAME': 'db01',
 
+
+    }
+}
 
 
 # Password validation
