@@ -89,6 +89,16 @@ class TestProcedureViews(APITestCase):
             price=Decimal(1),
             coeffitient=0.5,
         )
+    
+    def test_create(self):
+        url = reverse('procedure-list')
+        data = {'name': 'create test'}
+        count = Procedure.objects.count()
+        response = self.client.post(url, data)
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert Procedure.objects.count() == count + 1
+        assert Procedure.objects.filter(**data).exists()
 
     def test_retrieve(self):
         url = reverse('procedure-detail', args=[self.instance.id])
