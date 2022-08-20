@@ -12,4 +12,3 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += yasg_urls
-

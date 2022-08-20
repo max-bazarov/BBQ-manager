@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Employee(models.Model):
 
     class Meta:
@@ -15,7 +16,6 @@ class MasterProcedure(models.Model):
 
     class Meta:
         db_table = 'master_procedure'
-
 
     procedure = models.ForeignKey(
         'procedures.Procedure',

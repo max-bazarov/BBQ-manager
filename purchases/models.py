@@ -19,7 +19,7 @@ class PurchaseProcedure(models.Model):
 
     class Meta:
         db_table = 'purchase_procedure'
-    
+
     purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE)
     procedure = models.ForeignKey('employees.MasterProcedure', on_delete=models.DO_NOTHING)
 
