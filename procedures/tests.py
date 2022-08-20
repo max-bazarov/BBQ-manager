@@ -89,7 +89,7 @@ class TestProcedureViews(APITestCase):
             price=Decimal(1),
             coeffitient=0.5,
         )
-    
+
     def test_create(self):
         url = reverse('procedure-list')
         data = {'name': 'create test'}

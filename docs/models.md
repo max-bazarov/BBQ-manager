@@ -53,4 +53,5 @@ Fields:
 - id
 - material
 - purchase
+
 The `UsedMaterials` model represents a connection between purchase and materials used during the procedure.
