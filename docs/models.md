@@ -43,15 +43,20 @@ and the other 500 goes to the saloon. Flag archived shows if procedure is archiv
 Fields:
 - id
 - time
-- procedure
 - is_paid_by_card
 
 The `Purchase` model represents a customer visit to the saloon.
+
+## PurchaseProcedure
+Fields:
+- id
+- purchase
+- procedure (fk to MasterProcedure)
 
 ## UsedMaterials
 Fields:
 - id
 - material
-- purchase
+- procedure (fk to PurchaseProcedure)
 
 The `UsedMaterials` model represents a connection between purchase and materials used during the procedure.
