@@ -1,8 +1,10 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 
 from inventory.views import MaterialView
 
-urlpatterns = [
-    path('', MaterialView.as_view({'get': 'list', 'post': 'create'})),
+router = DefaultRouter()
 
-]
+router.register('materials', MaterialView, 'material')
+
+urlpatterns = router.urls
