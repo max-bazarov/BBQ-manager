@@ -98,6 +98,7 @@ class TestMaterialView(APITestCase,
         getcontext().prec = 2
         cls.update_data = {
             'name': 'Hair Color 1',
+            'price': 1.11
             # 'unit': MaterialUnits.GRAMMS.value
         }
         cls.data = {
