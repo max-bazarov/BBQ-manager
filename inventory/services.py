@@ -21,7 +21,8 @@ class MaterialCreateService(ModelCreateService, BaseMaterialService):
 class MaterialDestroyService:
     def __init__(self, instance):
         self.instance = instance
-
+        self.model = instance.__class__
+        
     def has_related(self) -> bool:
         return self.instance.uses.exists()
 

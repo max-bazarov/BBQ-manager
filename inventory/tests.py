@@ -3,28 +3,26 @@ from decimal import Decimal, getcontext
 import pytest
 from django.test import TestCase
 
+
 from core.services import ArchiveService
 from core.tests import (BaseArchiveServiceTest, BaseCreateServiceTest,
-                        BaseDestroyServiceTest)
-from employees.models import Employee, MasterProcedure
-from procedures.models import Procedure
-from purchases.models import UsedMaterial, Purchase, PurchaseProcedure
+                        BaseDestroyServiceTest, BaseCRUDArchiveViewTest)
+from purchases.models import UsedMaterial
 
 from .models import Material, MaterialUnits
+from .serializers import MaterialSerializer
 from .services import MaterialCreateService, MaterialDestroyService
-from rest_framework.test import APITestCase
+
 
 @pytest.mark.django_db
 class TestMaterialService(TestCase,
                           BaseCreateServiceTest,
-
                           BaseArchiveServiceTest):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.model = Material
         cls.create_service = MaterialCreateService
-        cls.destroy_service = MaterialDestroyService
         cls.archive_service = ArchiveService
 
         getcontext().prec = 2
@@ -40,23 +38,22 @@ class TestMaterialService(TestCase,
         cls.instance = Material.objects.create(**cls.data)
 
 
-class TestMaterialDestroyService(APITestCase):
+@pytest.mark.django_db
+class TestMaterialDestroyService(TestCase):
 
-    def __init__(self, methodName: str = ...):
-        super().__init__(methodName)
-        self.instance = None
-
-    data = {
-        'name': 'Hair Color',
-        'price': Decimal('1.11'),
-        'unit': MaterialUnits.GRAMMS.value
-    }
 
     @classmethod
-    def SetUpClass(cls):
+    def setUpClass(cls):
+        super().setUpClass()
         cls.model = Material
+        cls.data = {
+            'name': 'Hair Color',
+            'price': Decimal('1.11'),
+            'unit': MaterialUnits.GRAMMS.value
+        }
+        cls.instance = Material.objects.create(**cls.data)
         UsedMaterial.objects.create(
-            material=cls.data,
+            material=cls.instance,
             amount=1
         )
 
@@ -64,6 +61,6 @@ class TestMaterialDestroyService(APITestCase):
         count = Material.objects.count()
         MaterialDestroyService(self.instance).destroy()
 
-        assert Material.objects.count() == count - 1, (
+        assert Material.objects.count() == count, (
             f'{MaterialDestroyService.__name__} does not delete instance after destroy.'
         )

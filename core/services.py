@@ -1,9 +1,7 @@
+import funcy
 from django import forms
 from django.core.exceptions import FieldDoesNotExist, ValidationError
 from django.db.models import Model
-
-import funcy
-
 from service_objects.services import Service
 
 

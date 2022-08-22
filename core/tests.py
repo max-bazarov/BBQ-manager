@@ -1,8 +1,9 @@
 from typing import Any
+
+from django.db.models import Model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.serializers import Serializer
-from django.db.models import Model
 
 
 class BaseCreateServiceTest:

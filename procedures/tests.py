@@ -1,17 +1,18 @@
-import pytest
 from decimal import Decimal
+
+import pytest
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.tests import BaseCRUDViewTest, BaseCreateServiceTest
+from core.tests import BaseCreateServiceTest, BaseCRUDViewTest
 from employees.models import Employee, MasterProcedure
 from procedures.serializers import ProcedureSerializer
 
 from .models import Procedure
-from .services import ProcedureCreateService, ProcedureService
 from .serializers import ProcedureSerializer
+from .services import ProcedureCreateService, ProcedureService
 
 
 @pytest.mark.django_db
