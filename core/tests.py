@@ -177,7 +177,7 @@ class BaseArchiveViewTest(BaseViewTest):
         url = reverse(self.basename + '-detail', args=[self.instance.id])
         response = self.client.put(url, self.update_data)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK, str(response.json())
         assert count + 1 == self.model.objects.count()
         assert self.model.objects.filter(id=self.instance.id).exists()
         assert self.model.objects.get(id=self.instance.id).archived
@@ -188,7 +188,7 @@ class BaseArchiveViewTest(BaseViewTest):
         url = reverse(self.basename + '-detail', args=[self.instance.id])
         response = self.client.put(url, self.update_data)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK, str(response.json())
         assert count + 1 == self.model.objects.count()
         assert self.model.objects.filter(id=self.instance.id).exists()
         assert self.model.objects.get(id=self.instance.id).archived
