@@ -3,9 +3,23 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.serializers import Serializer
 from django.db.models import Model
+from service_objects.services import Service
 
 
 class BaseCreateServiceTest:
+    '''
+    Base Create Service Test is ment to test service classes, which are responsible for
+    creation operations. In order to use it you should inherit from django.test.TestCase
+    and use this class as a mixin.
+
+    Usage: inherit from django.test.TestCase and use this class as mixin.
+
+    Note: Works with services, which are inherited from service_objects.services.Service only.
+    '''
+
+    model: type[Model]
+    data: dict[str, Any]
+    create_service: type[Service]
 
     def test_create(self):
         count = self.model.objects.count()
@@ -22,6 +36,18 @@ class BaseCreateServiceTest:
 
 
 class BaseDestroyServiceTest:
+    '''
+    Base Destroy Service Test is ment to test service classes, wher are responsible for
+    destroy operations.
+
+    Usage: inherit from django.test.TestCase and use this class as mixin.
+
+    Note: Works with services, which are inherited from service_objects.services.Service only.
+
+    '''
+
+    instance: Model
+    create_service: type[Service]
 
     def test_destroy(self):
         count = self.model.objects.count()
@@ -32,6 +58,13 @@ class BaseDestroyServiceTest:
 
 
 class BaseArchiveServiceTest:
+    '''
+    This class is ment to test archive services.
+
+    Usage: inherit from django.test.TestCase and use this class as mixin.
+
+    Note: Works with services, which are inherited from service_objects.services.Service only.
+    '''
 
     def test_archive(self):
         count = self.model.objects.count()
@@ -74,6 +107,9 @@ class BaseArchiveServiceTest:
 
 
 class BaseViewTest:
+    '''
+    Class for defining base attrs of Base View tests.
+    '''
     model: type[Model]
     serializer: type[Serializer]
     instance: Model
@@ -82,6 +118,17 @@ class BaseViewTest:
 
 
 class BaseCreateViewTest(BaseViewTest):
+    '''
+    This class is ment to test CreateViews.
+
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model]
+    serializer: type[Serializer]
+    data: dict[str, Any]
+    basename: str
+    '''
 
     def test_create_view(self):
         count = self.model.objects.count()
@@ -99,7 +146,17 @@ class BaseCreateViewTest(BaseViewTest):
 
 
 class BaseRetrieveViewTest(BaseViewTest):
+    '''
+    This class is ment to use retrive ednpoint.
 
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model]
+    serializer: type[Serializer]
+    instance: Model
+    basename: str
+    '''
     def test_retrieve_view(self):
         url = reverse(self.basename + '-detail', args=[self.instance.id])
         response = self.client.get(url)
@@ -109,7 +166,17 @@ class BaseRetrieveViewTest(BaseViewTest):
 
 
 class BaseListViewTest(BaseViewTest):
+    '''
+    This class is ment to test listing endpoints.
 
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model]
+    serializer: type[Serializer]
+    instance: Model
+    basename: str
+    '''
     def test_list_view(self):
         url = reverse(self.basename + '-list')
         response = self.client.get(url)
@@ -119,6 +186,18 @@ class BaseListViewTest(BaseViewTest):
 
 
 class BaseUpdateViewTest(BaseViewTest):
+    '''
+    This class is ment to test Update endpoints.
+
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model] # Model class of
+    serializer: type[Serializer]
+    instance: Model
+    update_data: dict[str, Any]
+    basename: str
+    '''
     update_data: dict[str, Any]
 
     def test_update_view(self):
@@ -151,6 +230,16 @@ class BaseUpdateViewTest(BaseViewTest):
 
 
 class BaseDestroyViewTest(BaseViewTest):
+    '''
+    This class is ment to test destroy endpoints.
+
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model] # Model class of
+    instance: Model
+    basename: str
+    '''
 
     def test_destroy_view(self):
         count = self.model.objects.count()
@@ -165,10 +254,33 @@ class BaseCRUDViewTest(BaseCreateViewTest,
                        BaseRetrieveViewTest,
                        BaseListViewTest,
                        BaseUpdateViewTest):
+    '''
+    This test is a combination of all base crud tests.
+
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model] # Model class of
+    serializer: type[Serializer]
+    instance: Model
+    data: dict[str, Any]
+    update_data: dict[str, Any]
+    basename: str
+    '''
     pass
 
 
 class BaseArchiveViewTest(BaseViewTest):
+    '''
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model] # Model class of
+    serializer: type[Serializer]
+    instance: Model
+    update_data: dict[str, Any]
+    basename: str
+    '''
     update_data: dict[str, Any]
 
     def test_update(self):
@@ -206,4 +318,17 @@ class BaseCRUDArchiveViewTest(BaseCreateViewTest,
                               BaseListViewTest,
                               BaseArchiveViewTest,
                               BaseDestroyViewTest):
+    '''
+    This test is a combination of all base crd and archive tests.
+
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model] # Model class of
+    serializer: type[Serializer]
+    instance: Model
+    data: dict[str, Any]
+    update_data: dict[str, Any]
+    basename: str
+    '''
     pass
