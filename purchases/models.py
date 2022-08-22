@@ -34,5 +34,6 @@ class UsedMaterial(models.Model):
     material = models.ForeignKey(
         'inventory.Material',
         on_delete=models.DO_NOTHING,
+        related_name='uses'
     )
     amount = models.IntegerField(default=1)
