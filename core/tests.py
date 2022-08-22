@@ -344,7 +344,10 @@ class BaseCRUDArchiveViewTest(BaseCreateViewTest,
 
 
 class DestroyInstancesWithRelationalDependenciesTestMixin(BaseTestsUtilMixin):
-    ''''''
+    '''
+    This class is ment to test services which work with instances that are not permitted
+    to delete instanced, which have related objects.
+    '''
     instance: Model
     model: type[Model]
     instance_with_relation: Model
