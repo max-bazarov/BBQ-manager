@@ -15,10 +15,6 @@ class ProcedureCreateService(ModelCreateService, ProcedureServiceFields):
     model = Procedure
 
 
-class ProcedureDestroyService(ModelDestroyService):
-    model = Procedure
-
-
 class ProcedureService:
 
     def __init__(self, instance, **kwargs):
