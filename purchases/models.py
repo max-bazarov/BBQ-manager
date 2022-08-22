@@ -29,10 +29,11 @@ class UsedMaterial(models.Model):
     procedure = models.ForeignKey(
         PurchaseProcedure,
         on_delete=models.CASCADE,
-        related_name='materials'
+        related_name='materials', blank=True, null=True,
     )
     material = models.ForeignKey(
         'inventory.Material',
         on_delete=models.DO_NOTHING,
+        related_name='uses'
     )
     amount = models.IntegerField(default=1)

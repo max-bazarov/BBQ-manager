@@ -1,3 +1,11 @@
+from typing import Any
+
+from django.db.models import Model
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.serializers import Serializer
+
+
 class BaseCreateServiceTest:
 
     def test_create(self):
@@ -64,3 +72,139 @@ class BaseArchiveServiceTest:
         assert self.update_data['price'] == new_instance.price, (
             f'{self.archive_service.__class__.__name__} update method does not update instance'
         )
+
+
+class BaseViewTest:
+    model: type[Model]
+    serializer: type[Serializer]
+    instance: Model
+    data: dict[str, str]
+    basename: str
+
+
+class BaseCreateViewTest(BaseViewTest):
+
+    def test_create_view(self):
+        count = self.model.objects.count()
+        url = reverse(self.basename + '-list')
+        response = self.client.post(url, self.data)
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert count + 1 == self.model.objects.count()
+        assert response.json() == self.serializer(self.model.objects.last()).data
+        assert self.model.objects.filter(**self.data).exists()
+        assert all(
+            v == self.data[k]
+            for k, v in self.data.items()
+        )
+
+
+class BaseRetrieveViewTest(BaseViewTest):
+
+    def test_retrieve_view(self):
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.get(url)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == self.serializer(self.instance).data
+
+
+class BaseListViewTest(BaseViewTest):
+
+    def test_list_view(self):
+        url = reverse(self.basename + '-list')
+        response = self.client.get(url)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == self.serializer(self.model.objects.all(), many=True).data
+
+
+class BaseUpdateViewTest(BaseViewTest):
+    update_data: dict[str, Any]
+
+    def test_update_view(self):
+        count = self.model.objects.count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.put(url, self.update_data)
+        instance = self.model.objects.get(id=self.instance.pk)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == self.serializer(instance).data
+        assert count == self.model.objects.count()
+        assert all(
+            v == getattr(instance, k)
+            for k, v in self.update_data.items()
+        )
+
+    def test_partial_update_view(self):
+        count = self.model.objects.count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.patch(url, self.update_data)
+        instance = self.model.objects.get(id=self.instance.pk)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == self.serializer(instance).data
+        assert count == self.model.objects.count()
+        assert all(
+            v == getattr(instance, k)
+            for k, v in self.update_data.items()
+        )
+
+
+class BaseDestroyViewTest(BaseViewTest):
+
+    def test_destroy_view(self):
+        count = self.model.objects.count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.delete(url)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert count - 1 == self.model.objects.count()
+
+
+class BaseCRUDViewTest(BaseCreateViewTest,
+                       BaseRetrieveViewTest,
+                       BaseListViewTest,
+                       BaseUpdateViewTest):
+    pass
+
+
+class BaseArchiveViewTest(BaseViewTest):
+    update_data: dict[str, Any]
+
+    def test_update(self):
+        count = self.model.objects.count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.put(url, self.update_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert count + 1 == self.model.objects.count()
+        assert self.model.objects.filter(id=self.instance.id).exists()
+        assert self.model.objects.get(id=self.instance.id).archived
+        assert response.json() == self.serializer(self.model.objects.last()).data
+
+    def test_partial_update(self):
+        count = self.model.objects.count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.put(url. self.update_data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert count + 1 == self.model.objects.count()
+        assert self.model.objects.filter(id=self.instance.id).exists()
+        assert self.model.objects.get(id=self.instance.id).archived
+        assert response.json() == self.serializer(self.model.objects.last()).data
+
+    def test_archive(self):
+        url = reverse(self.basename + '-archive', args=[self.instance.id])
+        response = self.client.put(url)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert self.model.get(id=self.instance.id).archived
+
+
+class BaseCRUDArchiveViewTest(BaseCreateViewTest,
+                              BaseRetrieveViewTest,
+                              BaseListViewTest,
+                              BaseArchiveViewTest,
+                              BaseDestroyViewTest):
+    pass

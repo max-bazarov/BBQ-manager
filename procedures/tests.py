@@ -1,17 +1,18 @@
-import pytest
 from decimal import Decimal
+
+import pytest
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.tests import BaseCreateServiceTest
+from core.tests import BaseCreateServiceTest, BaseCRUDViewTest
 from employees.models import Employee, MasterProcedure
 from procedures.serializers import ProcedureSerializer
 
 from .models import Procedure
-from .services import ProcedureCreateService, ProcedureService
 from .serializers import ProcedureSerializer
+from .services import ProcedureCreateService, ProcedureService
 
 
 @pytest.mark.django_db
@@ -67,7 +68,11 @@ class TestProcedureServices(TestCase, BaseCreateServiceTest):
         )
 
 
-class TestProcedureViews(APITestCase):
+@pytest.mark.django_db
+class TestProcedureViews(APITestCase, BaseCRUDViewTest):
+    model = Procedure
+    serializer = ProcedureSerializer
+    basename = 'procedure'
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -75,7 +80,11 @@ class TestProcedureViews(APITestCase):
         cls.data = {
             'name': 'test'
         }
-        cls.instance = Procedure.objects.create(**cls.data)
+        cls.update_data = {
+            'name': 'new test'
+        }
+
+        cls.instance = Procedure.objects.create(name='instance')
         cls.procedure_with_master = Procedure.objects.create(name='master procedure')
         cls.employee = Employee.objects.create(
             first_name='name',
@@ -90,50 +99,6 @@ class TestProcedureViews(APITestCase):
             coeffitient=0.5,
         )
 
-    def test_create(self):
-        url = reverse('procedure-list')
-        data = {'name': 'create test'}
-        count = Procedure.objects.count()
-        response = self.client.post(url, data)
-
-        assert response.status_code == status.HTTP_201_CREATED
-        assert Procedure.objects.count() == count + 1
-        assert Procedure.objects.filter(**data).exists()
-
-    def test_retrieve(self):
-        url = reverse('procedure-detail', args=[self.instance.id])
-        response = self.client.get(url)
-
-        assert response.status_code == status.HTTP_200_OK, (
-            f'`{url}` not available'
-        )
-        assert ProcedureSerializer(self.instance).data == response.json()
-
-    def test_list(self):
-        url = reverse('procedure-list')
-        response = self.client.get(url)
-
-        assert response.status_code == status.HTTP_200_OK, (
-            f'`{url}` not available'
-        )
-        assert len(response.json()) == Procedure.objects.count(), 'Missing procedures'
-
-    def test_put(self):
-        url = reverse('procedure-detail', args=[self.instance.id])
-        data = {'name': 'new name'}
-        response = self.client.put(url, data)
-
-        assert response.status_code == status.HTTP_200_OK
-        assert response.json()['name'] == data['name']
-
-    def test_patch(self):
-        url = reverse('procedure-detail', args=[self.instance.id])
-        data = {'name': 'new name'}
-        response = self.client.patch(url, data)
-
-        assert response.status_code == status.HTTP_200_OK
-        assert response.json()['name'] == data['name']
-
     def test_delete_without_master(self):
         count = Procedure.objects.count()
         url = reverse('procedure-detail', args=[self.instance.id])
@@ -141,13 +106,3 @@ class TestProcedureViews(APITestCase):
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert count - 1 == Procedure.objects.count()
-
-    def test_delete_with_master(self):
-        count = Procedure.objects.count()
-        url = reverse('procedure-detail', args=[self.procedure_with_master.id])
-        response = self.client.delete(url)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST, (
-
-        )
-        assert count == Procedure.objects.count()

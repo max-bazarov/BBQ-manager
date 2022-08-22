@@ -8,5 +8,3 @@ class MaterialSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'unit', 'price')
         model = Material
-
-
