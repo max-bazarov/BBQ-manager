@@ -1,17 +1,22 @@
 from decimal import Decimal, getcontext
-
+from datetime import datetime
 import pytest
 from django.test import TestCase
-
+from rest_framework import status
+from django.urls import reverse
 
 from core.services import ArchiveService
 from core.tests import (BaseArchiveServiceTest, BaseCreateServiceTest,
-                        BaseDestroyServiceTest, BaseCRUDArchiveViewTest)
-from purchases.models import UsedMaterial
+                        BaseCRUDArchiveViewTest)
+from employees.models import Employee, MasterProcedure
+from procedures.models import Procedure
+from purchases.models import UsedMaterial, Purchase, PurchaseProcedure
 
 from .models import Material, MaterialUnits
 from .serializers import MaterialSerializer
+
 from .services import MaterialCreateService, MaterialDestroyService
+from rest_framework.test import APITestCase
 
 
 @pytest.mark.django_db
@@ -35,24 +40,34 @@ class TestMaterialService(TestCase,
             'unit': MaterialUnits.GRAMMS.value
         }
 
-        cls.instance = Material.objects.create(**cls.data)
-
-
-@pytest.mark.django_db
-class TestMaterialDestroyService(TestCase):
-
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.model = Material
-        cls.data = {
-            'name': 'Hair Color',
-            'price': Decimal('1.11'),
-            'unit': MaterialUnits.GRAMMS.value
-        }
-        cls.instance = Material.objects.create(**cls.data)
+        cls.instance = Material.objects.create(
+            name='Haircut',
+            price=220,
+            unit='PC'
+        )
+        cls.employee = Employee.objects.create(
+            first_name='name',
+            last_name='surname',
+            position='someone',
+            coeffitient=1.11
+        )
+        cls.procedure_with_master = Procedure.objects.create(name='master procedure')
+        cls.master_procedure = MasterProcedure.objects.create(
+            procedure=cls.procedure_with_master,
+            employee=cls.employee,
+            price=Decimal(1),
+            coeffitient=0.5,
+        )
+        cls.purchase = Purchase.objects.create(
+            time=datetime.now(),
+            is_paid_by_card=False,
+        )
+        cls.purchase_procedure = PurchaseProcedure.objects.create(
+            purchase=cls.purchase,
+            procedure=cls.master_procedure
+        )
         UsedMaterial.objects.create(
+            procedure=cls.purchase_procedure,
             material=cls.instance,
             amount=1
         )
@@ -69,3 +84,68 @@ class TestMaterialDestroyService(TestCase):
         assert Material.objects.count() == count, (
             f'{MaterialDestroyService.__name__} does not delete instance after destroy.'
         )
+
+
+@pytest.mark.django_db
+class TestMaterialView(APITestCase,
+                       BaseCRUDArchiveViewTest):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.basename = 'material'
+        cls.serializer = MaterialSerializer
+        cls.model = Material
+        getcontext().prec = 2
+        cls.update_data = {
+            'price': 10,
+        }
+        cls.data = {
+            'name': 'Hair Color',
+            'price': 1.11,
+            'unit': MaterialUnits.GRAMMS.value
+        }
+        cls.instance = Material.objects.create(
+            name='zizi',
+            price=228,
+            unit='GR'
+        )
+        cls.instance_with_relation = Material.objects.create(
+            name='Haircut',
+            price=220,
+            unit='PC'
+        )
+        cls.employee = Employee.objects.create(
+            first_name='name',
+            last_name='surname',
+            position='someone',
+            coeffitient=1.11
+        )
+        cls.procedure_with_master = Procedure.objects.create(name='master procedure')
+        cls.master_procedure = MasterProcedure.objects.create(
+            procedure=cls.procedure_with_master,
+            employee=cls.employee,
+            price=Decimal(1),
+            coeffitient=0.5,
+        )
+        cls.purchase = Purchase.objects.create(
+            time=datetime.now(),
+            is_paid_by_card=False,
+        )
+        cls.purchase_procedure = PurchaseProcedure.objects.create(
+            purchase=cls.purchase,
+            procedure=cls.master_procedure
+        )
+        UsedMaterial.objects.create(
+            procedure=cls.purchase_procedure,
+            material=cls.instance_with_relation,
+            amount=1
+        )
+
+    def test_destroy_view_with_relation(self):
+        count = self.model.objects.count()
+        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
+        response = self.client.delete(url)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert count == self.model.objects.count()
+

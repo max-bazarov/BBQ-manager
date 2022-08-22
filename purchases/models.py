@@ -29,7 +29,7 @@ class UsedMaterial(models.Model):
     procedure = models.ForeignKey(
         PurchaseProcedure,
         on_delete=models.CASCADE,
-        related_name='materials', blank=True, null=True,
+        related_name='materials',
     )
     material = models.ForeignKey(
         'inventory.Material',

@@ -186,7 +186,7 @@ class BaseArchiveViewTest(BaseViewTest):
     def test_partial_update(self):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
-        response = self.client.put(url. self.update_data)
+        response = self.client.put(url, self.update_data)
 
         assert response.status_code == status.HTTP_200_OK
         assert count + 1 == self.model.objects.count()
@@ -199,7 +199,7 @@ class BaseArchiveViewTest(BaseViewTest):
         response = self.client.put(url)
 
         assert response.status_code == status.HTTP_200_OK
-        assert self.model.get(id=self.instance.id).archived
+        assert self.model.objects.get(id=self.instance.id).archived
 
 
 class BaseCRUDArchiveViewTest(BaseCreateViewTest,
