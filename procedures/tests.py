@@ -1,17 +1,18 @@
-import pytest
 from decimal import Decimal
+
+import pytest
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.tests import BaseCRUDViewTest, BaseCreateServiceTest
+from core.tests import BaseCreateServiceTest, BaseCRUDViewTest
 from employees.models import Employee, MasterProcedure
 from procedures.serializers import ProcedureSerializer
 
 from .models import Procedure
-from .services import ProcedureCreateService, ProcedureService
 from .serializers import ProcedureSerializer
+from .services import ProcedureService
 
 
 @pytest.mark.django_db
@@ -21,25 +22,39 @@ class TestProcedureServices(TestCase, BaseCreateServiceTest):
     def setUpClass(cls):
         super().setUpClass()
         cls.model = Procedure
-        cls.create_service = ProcedureCreateService
+        cls.create_service = ProcedureService
 
         cls.data = {
             'name': 'test'
         }
-        cls.instance = Procedure.objects.create(**cls.data)
+        cls.instance = Procedure.objects.create(name='instance')
         cls.procedure_with_master = Procedure.objects.create(name='master procedure')
         cls.employee = Employee.objects.create(
             first_name='name',
             last_name='surname',
             position='someone',
-            coeffitient=1.11
+            coefficient=1.11
         )
         MasterProcedure.objects.create(
             procedure=cls.procedure_with_master,
             employee=cls.employee,
             price=Decimal(1),
-            coeffitient=0.5,
+            coefficient=0.5,
         )
+
+    def test_create(self):
+        count = self.model.objects.count()
+        instance = self.create_service(**self.data).create()
+
+        assert count + 1 == self.model.objects.count(), (
+            f'{self.create_service.__class__.__name__} does not create instance'
+        )
+        assert isinstance(instance, self.model), (
+            f'{self.create_service.__class__.__name__} create method does not return instance'
+        )
+        print(instance.id, instance)
+        for k, v in self.data.items():
+            assert v == getattr(instance, k)
 
     def test_destroy_without_master_procedures(self):
         count = Procedure.objects.count()
@@ -89,13 +104,13 @@ class TestProcedureViews(APITestCase, BaseCRUDViewTest):
             first_name='name',
             last_name='surname',
             position='someone',
-            coeffitient=1.11
+            coefficient=1.11
         )
         MasterProcedure.objects.create(
             procedure=cls.procedure_with_master,
             employee=cls.employee,
             price=Decimal(1),
-            coeffitient=0.5,
+            coefficient=0.5,
         )
 
     def test_delete_without_master(self):

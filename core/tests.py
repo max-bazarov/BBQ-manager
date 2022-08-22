@@ -1,9 +1,17 @@
 from typing import Any
+
+from django.db.models import Model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.serializers import Serializer
-from django.db.models import Model
 from service_objects.services import Service
+
+
+class BaseTestsUtilMixin:
+    model: type[Model]
+
+    def get_count(self) -> int:
+        return self.model.objects.count()
 
 
 class BaseCreateServiceTest:
@@ -31,6 +39,7 @@ class BaseCreateServiceTest:
         assert isinstance(instance, self.model), (
             f'{self.create_service.__class__.__name__} create method does not return instance'
         )
+        print(instance.id, instance)
         for k, v in self.data.items():
             assert v == getattr(instance, k)
 
@@ -192,7 +201,7 @@ class BaseUpdateViewTest(BaseViewTest):
     Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
     Provide next attrs in setUpClass method:
 
-    model: type[Model] # Model class of
+    model: type[Model]
     serializer: type[Serializer]
     instance: Model
     update_data: dict[str, Any]
@@ -206,7 +215,7 @@ class BaseUpdateViewTest(BaseViewTest):
         response = self.client.put(url, self.update_data)
         instance = self.model.objects.get(id=self.instance.pk)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK, str(response.json())
         assert response.json() == self.serializer(instance).data
         assert count == self.model.objects.count()
         assert all(
@@ -236,7 +245,7 @@ class BaseDestroyViewTest(BaseViewTest):
     Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
     Provide next attrs in setUpClass method:
 
-    model: type[Model] # Model class of
+    model: type[Model]
     instance: Model
     basename: str
     '''
@@ -260,7 +269,7 @@ class BaseCRUDViewTest(BaseCreateViewTest,
     Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
     Provide next attrs in setUpClass method:
 
-    model: type[Model] # Model class of
+    model: type[Model]
     serializer: type[Serializer]
     instance: Model
     data: dict[str, Any]
@@ -275,7 +284,7 @@ class BaseArchiveViewTest(BaseViewTest):
     Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
     Provide next attrs in setUpClass method:
 
-    model: type[Model] # Model class of
+    model: type[Model]
     serializer: type[Serializer]
     instance: Model
     update_data: dict[str, Any]
@@ -332,3 +341,40 @@ class BaseCRUDArchiveViewTest(BaseCreateViewTest,
     basename: str
     '''
     pass
+
+
+class DestroyInstancesWithRelationalDependenciesTestMixin(BaseTestsUtilMixin):
+    ''''''
+    instance: Model
+    model: type[Model]
+    instance_with_relation: Model
+    destroy_service: type  # service class
+
+    def test_delete_without_relations(self):
+        count = self.get_count()
+        self.destroy_service(self.instance).destroy()
+
+        assert self.get_count() == count - 1, (
+            f'{self.destroy_service.__name__} does not destroy '
+            'instance without relations.'
+        )
+        assert not self.model.objects.filter(id=self.instance.id).exists(), (
+            f'{self.destroy_service.__name__} destroys '
+            'wrong instance'
+        )
+
+    def test_delete_with_relations(self):
+        count = self.get_count()
+
+        try:
+            self.destroy_service(self.instance_with_relation).destroy()
+        except Exception:
+            pass
+        else:
+            assert False, (
+                f'{self.destroy_service.__name__} does not raises when trying '
+                'to delete instance with relations'
+            )
+        assert count == self.get_count(), (
+            f'{self.destroy_service.__name__} destroys instance with existing relations.'
+        )
