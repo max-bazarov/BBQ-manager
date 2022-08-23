@@ -27,10 +27,10 @@ class ArchiveService:
         self.instance = instance
 
     def update(self, **kwargs) -> Model:
-        self.archive()
         kwargs = funcy.project(kwargs, [f.name for f in self.instance._meta.fields])
         if not kwargs:
             raise ValidationError('No data to update')
+        self.archive()
         for field in self.instance._meta.fields:
             if field.name not in kwargs:
                 kwargs[field.name] = getattr(self.instance, field.name)

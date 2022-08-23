@@ -32,5 +32,3 @@ class MaterialDestroyService:
                 f'Material cannot be deleted, because it is used material'
             )
         self.instance.delete()
-
-

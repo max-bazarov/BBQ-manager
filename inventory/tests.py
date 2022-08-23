@@ -1,22 +1,22 @@
-from decimal import Decimal, getcontext
 from datetime import datetime
+from decimal import Decimal, getcontext
+
 import pytest
 from django.test import TestCase
-from rest_framework import status
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 from core.services import ArchiveService
 from core.tests import (BaseArchiveServiceTest, BaseCreateServiceTest,
                         BaseCRUDArchiveViewTest)
 from employees.models import Employee, MasterProcedure
 from procedures.models import Procedure
-from purchases.models import UsedMaterial, Purchase, PurchaseProcedure
+from purchases.models import Purchase, PurchaseProcedure, UsedMaterial
 
 from .models import Material, MaterialUnits
 from .serializers import MaterialSerializer
-
 from .services import MaterialCreateService, MaterialDestroyService
-from rest_framework.test import APITestCase
 
 
 @pytest.mark.django_db
@@ -97,7 +97,9 @@ class TestMaterialView(APITestCase,
         cls.model = Material
         getcontext().prec = 2
         cls.update_data = {
-            'price': 10,
+            'name': 'Hair Color',
+            'price': Decimal(122.11),
+            'unit': MaterialUnits.GRAMMS.value
         }
         cls.data = {
             'name': 'Hair Color',
@@ -148,4 +150,3 @@ class TestMaterialView(APITestCase,
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert count == self.model.objects.count()
-
