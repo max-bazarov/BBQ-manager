@@ -306,7 +306,7 @@ class BaseArchiveViewTest(BaseViewTest):
     def test_partial_update(self):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
-        response = self.client.patch(url. self.update_data)
+        response = self.client.patch(url, self.update_data)
 
 
         assert response.status_code == status.HTTP_200_OK, str(response.json())
