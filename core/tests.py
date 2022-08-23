@@ -40,7 +40,6 @@ class BaseCreateServiceTest:
         assert isinstance(instance, self.model), (
             f'{self.create_service.__class__.__name__} create method does not return instance'
         )
-        print(instance.id, instance)
         for k, v in self.data.items():
             assert v == getattr(instance, k)
 
@@ -300,7 +299,6 @@ class BaseArchiveViewTest(BaseViewTest):
     def test_update(self):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
-        print('test upd', self.update_data)
         response = self.client.put(url, self.update_data, format='json')
 
         assert response.status_code == status.HTTP_200_OK, str(response.data())

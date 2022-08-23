@@ -53,23 +53,19 @@ class ArchiveService:
         serialzier.is_valid(raise_exception=True)
         return serialzier.validated_data
 
-
     def _clean_data(self, **kwargs):
         kwargs = funcy.project(kwargs, [f.name for f in self.instance._meta.fields])
         data = {}
         for field in self.instance._meta.fields:
             data[field.name] = getattr(self.instance, field.name)
         data.update(kwargs)
-        print('clean data', data)
         return funcy.omit(data, ['id', 'archived'])
 
     def update(self, **kwargs) -> Model:
-        print('update', kwargs)
         cleaned_data = self._clean_data(**kwargs)
         if len(cleaned_data) == 0:
             raise ValidationError('No data to update.')
         self.archive()
-        print(cleaned_data)
         new_instance = self.instance.__class__.objects.create(
             **self.get_data(**cleaned_data)
         )

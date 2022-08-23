@@ -51,7 +51,6 @@ class TestProcedureServices(TestCase):
         assert isinstance(instance, self.model), (
             f'{self.create_service.__class__.__name__} create method does not return instance'
         )
-        print(instance.id, instance)
         for k, v in self.data.items():
             assert v == getattr(instance, k)
 
