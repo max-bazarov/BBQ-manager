@@ -6,9 +6,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.tests import BaseCreateServiceTest, BaseCRUDViewTest
+from core.tests import BaseCRUDViewTest
 from employees.models import Employee, MasterProcedure
-from procedures.serializers import ProcedureSerializer
 
 from .models import Procedure
 from .serializers import ProcedureSerializer

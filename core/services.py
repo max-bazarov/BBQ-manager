@@ -39,7 +39,9 @@ class ArchiveService:
     instance: Model
     serializer_class: Optional[type[Serializer]]
 
-    def __init__(self, instance: Model, serializer_class: Optional[type[Serializer]] = None) -> None:
+    def __init__(self, instance: Model,
+                 serializer_class: Optional[type[Serializer]] = None) -> None:
+
         self.instance = instance
         self.serializer_class = serializer_class
 
