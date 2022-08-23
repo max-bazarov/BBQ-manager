@@ -1,8 +1,8 @@
 from django import forms
-from django.db.models import Model
+
 from service_objects.services import Service
 
-from core.services import ModelCreateService, ModelDestroyService
+from core.services import ModelCreateService
 
 from .models import Material
 
@@ -21,6 +21,7 @@ class MaterialCreateService(ModelCreateService, BaseMaterialService):
 class MaterialDestroyService:
     def __init__(self, instance):
         self.instance = instance
+        self.model = instance.__class__
 
     def has_related(self) -> bool:
         return self.instance.uses.exists()
@@ -28,8 +29,8 @@ class MaterialDestroyService:
     def destroy(self):
         if self.has_related():
             raise Exception(
-                f'Material cannot be deleted, because it is used material'
+                f'Material with id {self.instance.id} cannot be deleted,'
+                f' because it is used material'
             )
-        self.instance.delete()
-
-
+        self.model.objects.get(id=self.instance.id).delete()
+        return self.instance.id
