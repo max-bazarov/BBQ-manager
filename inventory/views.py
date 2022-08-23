@@ -27,7 +27,7 @@ class MaterialViewSet(ModelViewSet,
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
-        self.update(request, partial=True, *args, **kwargs)
+        return self.update(request, partial=True, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         try:
