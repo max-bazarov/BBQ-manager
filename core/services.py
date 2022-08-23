@@ -69,6 +69,7 @@ class ArchiveService:
         if len(cleaned_data) == 0:
             raise ValidationError('No data to update.')
         self.archive()
+        print(cleaned_data)
         new_instance = self.instance.__class__.objects.create(
             **self.get_data(**cleaned_data)
         )
