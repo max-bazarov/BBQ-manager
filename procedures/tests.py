@@ -6,9 +6,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.tests import BaseCreateServiceTest, BaseCRUDViewTest
+from core.tests import BaseCRUDViewTest
 from employees.models import Employee, MasterProcedure
-from procedures.serializers import ProcedureSerializer
 
 from .models import Procedure
 from .serializers import ProcedureSerializer
@@ -16,7 +15,7 @@ from .services import ProcedureService
 
 
 @pytest.mark.django_db
-class TestProcedureServices(TestCase, BaseCreateServiceTest):
+class TestProcedureServices(TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -52,7 +51,6 @@ class TestProcedureServices(TestCase, BaseCreateServiceTest):
         assert isinstance(instance, self.model), (
             f'{self.create_service.__class__.__name__} create method does not return instance'
         )
-        print(instance.id, instance)
         for k, v in self.data.items():
             assert v == getattr(instance, k)
 

@@ -32,7 +32,7 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler'
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
 }
 
 MIDDLEWARE = [
@@ -69,11 +69,14 @@ WSGI_APPLICATION = 'bbq_manager.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': 'localhost',
+        'PORT': 54321,
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'NAME': 'postgres',
     }
 }
 
