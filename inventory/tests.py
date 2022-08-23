@@ -1,22 +1,22 @@
-from decimal import Decimal, getcontext
 from datetime import datetime
+from decimal import Decimal, getcontext
+
 import pytest
 from django.test import TestCase
-from rest_framework import status
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 from core.services import ArchiveService
 from core.tests import (BaseArchiveServiceTest, BaseCreateServiceTest,
                         BaseCRUDArchiveViewTest)
 from employees.models import Employee, MasterProcedure
 from procedures.models import Procedure
-from purchases.models import UsedMaterial, Purchase, PurchaseProcedure
+from purchases.models import Purchase, PurchaseProcedure, UsedMaterial
 
 from .models import Material, MaterialUnits
 from .serializers import MaterialSerializer
-
 from .services import MaterialCreateService, MaterialDestroyService
-from rest_framework.test import APITestCase
 
 
 @pytest.mark.django_db
@@ -29,10 +29,11 @@ class TestMaterialService(TestCase,
         cls.model = Material
         cls.create_service = MaterialCreateService
         cls.archive_service = ArchiveService
+        cls.serializer_class = MaterialSerializer
 
         getcontext().prec = 2
         cls.update_data = {
-            'price': Decimal(10),
+            'price': Decimal('10'),
         }
         cls.data = {
             'name': 'Hair Color',
@@ -87,8 +88,7 @@ class TestMaterialService(TestCase,
 
 
 @pytest.mark.django_db
-class TestMaterialView(APITestCase,
-                       BaseCRUDArchiveViewTest):
+class TestMaterialView(APITestCase, BaseCRUDArchiveViewTest):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -98,8 +98,8 @@ class TestMaterialView(APITestCase,
         getcontext().prec = 2
         cls.update_data = {
             'name': 'Hair Color 1',
-            'price': 1.11
-            # 'unit': MaterialUnits.GRAMMS.value
+            'price': '1.11',
+            'unit': MaterialUnits.GRAMMS.value
         }
         cls.data = {
             'name': 'Hair Color',
@@ -108,19 +108,19 @@ class TestMaterialView(APITestCase,
         }
         cls.instance = Material.objects.create(
             name='zizi',
-            price=228,
+            price=Decimal('228'),
             unit='GR'
         )
         cls.instance_with_relation = Material.objects.create(
             name='Haircut',
-            price=220,
+            price=Decimal('220'),
             unit='PC'
         )
         cls.employee = Employee.objects.create(
             first_name='name',
             last_name='surname',
             position='someone',
-            coefficient=1.11
+            coefficient=0.6
         )
         cls.procedure_with_master = Procedure.objects.create(name='master procedure')
         cls.master_procedure = MasterProcedure.objects.create(
