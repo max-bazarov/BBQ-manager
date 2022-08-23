@@ -1,13 +1,21 @@
+import logging
+
 import funcy
 from django import forms
 from django.core.exceptions import FieldDoesNotExist, ValidationError
 from django.db.models import Model
 from service_objects.services import Service
 
+log = logging.getLogger(__name__)
+
 
 class ModelCreateService:
 
     def process(self):
+        log.warning(
+            f'Service {self.__class__.__name__} is depricated. '
+            f'Do not use ModelCreateService as mixin.'
+        )
         return self.model.objects.create(**self.cleaned_data)
 
     class Meta:
@@ -18,6 +26,10 @@ class ModelDestroyService(Service):
     id = forms.IntegerField()
 
     def process(self):
+        log.warning(
+            f'Service {self.__class__.__name__} is depricated. '
+            f'Do not use ModelDestroyService as mixin.'
+        )
         self.model.objects.filter(**self.cleaned_data).delete()
 
 

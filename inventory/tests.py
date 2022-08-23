@@ -49,14 +49,14 @@ class TestMaterialService(TestCase,
             first_name='name',
             last_name='surname',
             position='someone',
-            coeffitient=1.11
+            coefficient=1.11
         )
         cls.procedure_with_master = Procedure.objects.create(name='master procedure')
         cls.master_procedure = MasterProcedure.objects.create(
             procedure=cls.procedure_with_master,
             employee=cls.employee,
             price=Decimal(1),
-            coeffitient=0.5,
+            coefficient=0.5,
         )
         cls.purchase = Purchase.objects.create(
             time=datetime.now(),
@@ -124,14 +124,14 @@ class TestMaterialView(APITestCase,
             first_name='name',
             last_name='surname',
             position='someone',
-            coeffitient=1.11
+            coefficient=1.11
         )
         cls.procedure_with_master = Procedure.objects.create(name='master procedure')
         cls.master_procedure = MasterProcedure.objects.create(
             procedure=cls.procedure_with_master,
             employee=cls.employee,
             price=Decimal(1),
-            coeffitient=0.5,
+            coefficient=0.5,
         )
         cls.purchase = Purchase.objects.create(
             time=datetime.now(),
