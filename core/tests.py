@@ -1,6 +1,4 @@
-import json
 from typing import Any, Optional
-
 from django.db.models import Model
 from django.urls import reverse
 from rest_framework import status
@@ -94,7 +92,8 @@ class BaseArchiveServiceTest:
 
     def test_update(self):
         count = self.model.objects.count()
-        new_instance = self.archive_service(self.instance, serializer_class=self.serializer_class).update(**self.update_data)
+        new_instance = self.archive_service(self.instance, serializer_class=self.serializer_class)\
+            .update(**self.update_data)
         unchanged_fields = [
             f.name for f in self.instance._meta.fields
             if f.name not in self.update_data and f.name not in ['id', 'archived']
@@ -284,8 +283,6 @@ class BaseCRUDViewTest(BaseCreateViewTest,
     '''
     pass
 
-from rest_framework.test import APITestCase
-
 
 class BaseArchiveViewTest(BaseViewTest):
     '''
@@ -318,7 +315,6 @@ class BaseArchiveViewTest(BaseViewTest):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
         response = self.client.patch(url, self.update_data)
-
 
         assert response.status_code == status.HTTP_200_OK, str(response.json())
         assert count + 1 == self.model.objects.count()
