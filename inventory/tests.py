@@ -33,7 +33,10 @@ class TestMaterialService(TestCase,
 
         getcontext().prec = 2
         cls.update_data = {
+
+
             'price': Decimal('10'),
+
         }
         cls.data = {
             'name': 'Hair Color',
@@ -100,7 +103,9 @@ class TestMaterialView(APITestCase, BaseCRUDArchiveViewTest):
             'name': 'Hair Color 1',
             'price': '1.11',
             'unit': MaterialUnits.GRAMMS.value
+
         }
+
         cls.data = {
             'name': 'Hair Color',
             'price': 1.11,
@@ -150,4 +155,3 @@ class TestMaterialView(APITestCase, BaseCRUDArchiveViewTest):
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert count == self.model.objects.count()
-

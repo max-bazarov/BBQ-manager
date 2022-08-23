@@ -1,6 +1,4 @@
-import json
 from typing import Any, Optional
-
 from django.db.models import Model
 from django.urls import reverse
 from rest_framework import status
@@ -94,7 +92,8 @@ class BaseArchiveServiceTest:
 
     def test_update(self):
         count = self.model.objects.count()
-        new_instance = self.archive_service(self.instance, serializer_class=self.serializer_class).update(**self.update_data)
+        new_instance = self.archive_service(self.instance, serializer_class=self.serializer_class)\
+            .update(**self.update_data)
         unchanged_fields = [
             f.name for f in self.instance._meta.fields
             if f.name not in self.update_data and f.name not in ['id', 'archived']
@@ -105,7 +104,7 @@ class BaseArchiveServiceTest:
         )
         assert are_same, (
             f'{self.archive_service.__class__.__name__} new instance data'
-            f'is not equal to old instance data'
+            f' is not equal to old instance data'
         )
         assert count + 1 == self.model.objects.count(), (
             f'{self.archive_service.__class__.__name__} does not create updated instance'
@@ -284,8 +283,6 @@ class BaseCRUDViewTest(BaseCreateViewTest,
     '''
     pass
 
-from rest_framework.test import APITestCase
-
 
 class BaseArchiveViewTest(BaseViewTest):
     '''
@@ -306,7 +303,7 @@ class BaseArchiveViewTest(BaseViewTest):
         print('test upd', self.update_data)
         response = self.client.put(url, self.update_data, format='json')
 
-        assert response.status_code == status.HTTP_200_OK, str(response.json())
+        assert response.status_code == status.HTTP_200_OK, str(response.data())
         assert count + 1 == self.model.objects.count()
         assert self.model.objects.filter(id=self.instance.id).exists()
         assert self.model.objects.get(id=self.instance.id).archived
@@ -318,7 +315,6 @@ class BaseArchiveViewTest(BaseViewTest):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
         response = self.client.patch(url, self.update_data, format='json')
-
 
         assert response.status_code == status.HTTP_200_OK, str(response.json())
         assert count + 1 == self.model.objects.count()

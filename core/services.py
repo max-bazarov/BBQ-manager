@@ -1,4 +1,3 @@
-from functools import partial
 import logging
 from typing import Optional
 
@@ -40,16 +39,20 @@ class ArchiveService:
     instance: Model
     serializer_class: Optional[type[Serializer]]
 
-    def __init__(self, instance: Model, serializer_class: Optional[type[Serializer]] = None) -> None:
+    def __init__(self, instance: Model,
+                 serializer_class: Optional[type[Serializer]] = None) -> None:
+
         self.instance = instance
         self.serializer_class = serializer_class
 
     def get_data(self, **kwargs):
         if not self.serializer_class:
             return kwargs
+
         serialzier = self.serializer_class(data=kwargs, partial=True)
         serialzier.is_valid(raise_exception=True)
         return serialzier.validated_data
+
 
     def _clean_data(self, **kwargs):
         kwargs = funcy.project(kwargs, [f.name for f in self.instance._meta.fields])
@@ -69,6 +72,7 @@ class ArchiveService:
         new_instance = self.instance.__class__.objects.create(
             **self.get_data(**cleaned_data)
         )
+
         return new_instance
 
     def archive(self) -> int:

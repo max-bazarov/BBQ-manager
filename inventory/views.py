@@ -1,6 +1,3 @@
-from decimal import Decimal
-from functools import partial
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -14,13 +11,14 @@ from inventory.services import MaterialDestroyService
 
 class MaterialViewSet(ModelViewSet,
                       ArchiveViewMixin):
-    queryset = Material.objects.filter(archived=False)
+    queryset = Material.objects.filter()
     serializer_class = MaterialSerializer
 
     def update(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
-            updated_instance = ArchiveService(instance, self.serializer_class).update(**request.data)
+            updated_instance = ArchiveService(instance,
+                                              self.serializer_class).update(**request.data)
             return Response(MaterialSerializer(updated_instance).data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -34,5 +32,3 @@ class MaterialViewSet(ModelViewSet,
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
