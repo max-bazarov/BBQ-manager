@@ -17,14 +17,12 @@ from rest_framework.test import APITestCase
 @pytest.mark.django_db
 class TestMaterialService(TestCase,
                           BaseCreateServiceTest,
-
                           BaseArchiveServiceTest):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.model = Material
         cls.create_service = MaterialCreateService
-        cls.destroy_service = MaterialDestroyService
         cls.archive_service = ArchiveService
 
         getcontext().prec = 2

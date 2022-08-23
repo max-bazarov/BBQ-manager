@@ -9,7 +9,7 @@ class Employee(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     position = models.CharField(max_length=255)
-    coeffitient = models.FloatField()
+    coefficient = models.FloatField()
 
 
 class MasterProcedure(models.Model):
@@ -31,5 +31,5 @@ class MasterProcedure(models.Model):
         decimal_places=2,
         max_digits=7,
     )
-    coeffitient = models.FloatField()
+    coefficient = models.FloatField()
     archived = models.BooleanField(default=False)
