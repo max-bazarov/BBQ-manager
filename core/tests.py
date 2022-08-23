@@ -91,7 +91,7 @@ class BaseArchiveServiceTest:
         new_instance = self.archive_service(self.instance).update(**self.update_data)
         unchanged_fields = [
             f.name for f in self.instance._meta.fields
-            if f.name not in self.update_data and f.name != 'id'
+            if f.name not in self.update_data and f.name not in ['id', 'archived']
         ]
 
         are_same = all(
@@ -301,7 +301,9 @@ class BaseArchiveViewTest(BaseViewTest):
         assert count + 1 == self.model.objects.count()
         assert self.model.objects.filter(id=self.instance.id).exists()
         assert self.model.objects.get(id=self.instance.id).archived
-        assert response.json() == self.serializer(self.model.objects.last()).data
+        new_instance = self.model.objects.last()
+        assert not new_instance.archived
+        assert response.json() == self.serializer(new_instance).data
 
     def test_partial_update(self):
         count = self.model.objects.count()
