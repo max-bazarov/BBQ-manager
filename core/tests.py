@@ -219,7 +219,9 @@ class BaseUpdateViewTest(BaseViewTest):
         assert response.json() == self.serializer(instance).data
         assert count == self.model.objects.count()
         assert all(
-            v == getattr(instance, k)
+            v == getattr(instance, k).id
+            if isinstance(getattr(instance, k), Model)
+            else v == getattr(instance, k)
             for k, v in self.update_data.items()
         )
 
@@ -233,7 +235,9 @@ class BaseUpdateViewTest(BaseViewTest):
         assert response.json() == self.serializer(instance).data
         assert count == self.model.objects.count()
         assert all(
-            v == getattr(instance, k)
+            v == getattr(instance, k).id
+            if isinstance(getattr(instance, k), Model)
+            else v == getattr(instance, k)
             for k, v in self.update_data.items()
         )
 

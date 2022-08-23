@@ -1,17 +1,17 @@
-from core.services import ModelCreateService, ModelDestroyService
-from service_objects.services import Service
-from django import forms
+from typing import Optional
 
 from .models import UsedMaterial
 
 
-class BaseUsedMaterialService(Service):
-    material = forms.IntegerField()
-    procedure = forms.IntegerField()
-    amount = forms.IntegerField()
+class UsedMaterialService:
 
-class UsedMaterialCreateService(ModelCreateService, BaseUsedMaterialService):
-    model = UsedMaterial
+    def __init__(self, instance: Optional[UsedMaterial] = None, **kwargs):
+        self.instance = instance
+        self.model = UsedMaterial
+        self.kwargs = kwargs
 
-class UsedMaterialDestroyService(ModelDestroyService):
-    model = UsedMaterial
+    def destroy(self):
+        self.model.objects.get(id=self.instance.id).delete()
+
+    def create(self) -> UsedMaterial:
+        return self.model.objects.get_or_create(**self.kwargs)[0]
