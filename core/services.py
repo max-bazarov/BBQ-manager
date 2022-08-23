@@ -1,3 +1,4 @@
+from functools import partial
 import logging
 from typing import Optional
 
@@ -46,6 +47,9 @@ class ArchiveService:
     def get_data(self, **kwargs):
         if not self.serializer_class:
             return kwargs
+        for k, v in kwargs.items():
+            if isinstance(v, list):
+                kwargs[k] = v.pop()
         serialzier = self.serializer_class(data=kwargs, partial=True)
         serialzier.is_valid(raise_exception=True)
         return serialzier.validated_data
