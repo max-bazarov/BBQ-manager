@@ -4,9 +4,30 @@ from django.db.models import Model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.serializers import Serializer
+from service_objects.services import Service
+
+
+class BaseTestsUtilMixin:
+    model: type[Model]
+
+    def get_count(self) -> int:
+        return self.model.objects.count()
 
 
 class BaseCreateServiceTest:
+    '''
+    Base Create Service Test is ment to test service classes, which are responsible for
+    creation operations. In order to use it you should inherit from django.test.TestCase
+    and use this class as a mixin.
+
+    Usage: inherit from django.test.TestCase and use this class as mixin.
+
+    Note: Works with services, which are inherited from service_objects.services.Service only.
+    '''
+
+    model: type[Model]
+    data: dict[str, Any]
+    create_service: type[Service]
 
     def test_create(self):
         count = self.model.objects.count()
@@ -18,11 +39,24 @@ class BaseCreateServiceTest:
         assert isinstance(instance, self.model), (
             f'{self.create_service.__class__.__name__} create method does not return instance'
         )
+        print(instance.id, instance)
         for k, v in self.data.items():
             assert v == getattr(instance, k)
 
 
 class BaseDestroyServiceTest:
+    '''
+    Base Destroy Service Test is ment to test service classes, wher are responsible for
+    destroy operations.
+
+    Usage: inherit from django.test.TestCase and use this class as mixin.
+
+    Note: Works with services, which are inherited from service_objects.services.Service only.
+
+    '''
+
+    instance: Model
+    create_service: type[Service]
 
     def test_destroy(self):
         count = self.model.objects.count()
@@ -33,6 +67,13 @@ class BaseDestroyServiceTest:
 
 
 class BaseArchiveServiceTest:
+    '''
+    This class is ment to test archive services.
+
+    Usage: inherit from django.test.TestCase and use this class as mixin.
+
+    Note: Works with services, which are inherited from service_objects.services.Service only.
+    '''
 
     def test_archive(self):
         count = self.model.objects.count()
@@ -75,6 +116,9 @@ class BaseArchiveServiceTest:
 
 
 class BaseViewTest:
+    '''
+    Class for defining base attrs of Base View tests.
+    '''
     model: type[Model]
     serializer: type[Serializer]
     instance: Model
@@ -83,6 +127,17 @@ class BaseViewTest:
 
 
 class BaseCreateViewTest(BaseViewTest):
+    '''
+    This class is ment to test CreateViews.
+
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model]
+    serializer: type[Serializer]
+    data: dict[str, Any]
+    basename: str
+    '''
 
     def test_create_view(self):
         count = self.model.objects.count()
@@ -100,7 +155,17 @@ class BaseCreateViewTest(BaseViewTest):
 
 
 class BaseRetrieveViewTest(BaseViewTest):
+    '''
+    This class is ment to use retrive ednpoint.
 
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model]
+    serializer: type[Serializer]
+    instance: Model
+    basename: str
+    '''
     def test_retrieve_view(self):
         url = reverse(self.basename + '-detail', args=[self.instance.id])
         response = self.client.get(url)
@@ -110,7 +175,17 @@ class BaseRetrieveViewTest(BaseViewTest):
 
 
 class BaseListViewTest(BaseViewTest):
+    '''
+    This class is ment to test listing endpoints.
 
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model]
+    serializer: type[Serializer]
+    instance: Model
+    basename: str
+    '''
     def test_list_view(self):
         url = reverse(self.basename + '-list')
         response = self.client.get(url)
@@ -120,6 +195,18 @@ class BaseListViewTest(BaseViewTest):
 
 
 class BaseUpdateViewTest(BaseViewTest):
+    '''
+    This class is ment to test Update endpoints.
+
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model]
+    serializer: type[Serializer]
+    instance: Model
+    update_data: dict[str, Any]
+    basename: str
+    '''
     update_data: dict[str, Any]
 
     def test_update_view(self):
@@ -128,7 +215,7 @@ class BaseUpdateViewTest(BaseViewTest):
         response = self.client.put(url, self.update_data)
         instance = self.model.objects.get(id=self.instance.pk)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK, str(response.json())
         assert response.json() == self.serializer(instance).data
         assert count == self.model.objects.count()
         assert all(
@@ -152,6 +239,16 @@ class BaseUpdateViewTest(BaseViewTest):
 
 
 class BaseDestroyViewTest(BaseViewTest):
+    '''
+    This class is ment to test destroy endpoints.
+
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model]
+    instance: Model
+    basename: str
+    '''
 
     def test_destroy_view(self):
         count = self.model.objects.count()
@@ -166,10 +263,33 @@ class BaseCRUDViewTest(BaseCreateViewTest,
                        BaseRetrieveViewTest,
                        BaseListViewTest,
                        BaseUpdateViewTest):
+    '''
+    This test is a combination of all base crud tests.
+
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model]
+    serializer: type[Serializer]
+    instance: Model
+    data: dict[str, Any]
+    update_data: dict[str, Any]
+    basename: str
+    '''
     pass
 
 
 class BaseArchiveViewTest(BaseViewTest):
+    '''
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model]
+    serializer: type[Serializer]
+    instance: Model
+    update_data: dict[str, Any]
+    basename: str
+    '''
     update_data: dict[str, Any]
 
     def test_update(self):
@@ -186,7 +306,8 @@ class BaseArchiveViewTest(BaseViewTest):
     def test_partial_update(self):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
-        response = self.client.put(url, self.update_data)
+        response = self.client.patch(url. self.update_data)
+
 
         assert response.status_code == status.HTTP_200_OK, str(response.json())
         assert count + 1 == self.model.objects.count()
@@ -207,4 +328,57 @@ class BaseCRUDArchiveViewTest(BaseCreateViewTest,
                               BaseListViewTest,
                               BaseArchiveViewTest,
                               BaseDestroyViewTest):
+    '''
+    This test is a combination of all base crd and archive tests.
+
+    Usage: Inherit from rest_framework.APITestCase and use this class as a mixin.
+    Provide next attrs in setUpClass method:
+
+    model: type[Model] # Model class of
+    serializer: type[Serializer]
+    instance: Model
+    data: dict[str, Any]
+    update_data: dict[str, Any]
+    basename: str
+    '''
     pass
+
+
+class DestroyInstancesWithRelationalDependenciesTestMixin(BaseTestsUtilMixin):
+    '''
+    This class is ment to test services which work with instances that are not permitted
+    to delete instanced, which have related objects.
+    '''
+    instance: Model
+    model: type[Model]
+    instance_with_relation: Model
+    destroy_service: type  # service class
+
+    def test_delete_without_relations(self):
+        count = self.get_count()
+        self.destroy_service(self.instance).destroy()
+
+        assert self.get_count() == count - 1, (
+            f'{self.destroy_service.__name__} does not destroy '
+            'instance without relations.'
+        )
+        assert not self.model.objects.filter(id=self.instance.id).exists(), (
+            f'{self.destroy_service.__name__} destroys '
+            'wrong instance'
+        )
+
+    def test_delete_with_relations(self):
+        count = self.get_count()
+
+        try:
+            self.destroy_service(self.instance_with_relation).destroy()
+        except Exception:
+            pass
+        else:
+            assert False, (
+                f'{self.destroy_service.__name__} does not raises when trying '
+                'to delete instance with relations'
+            )
+        assert count == self.get_count(), (
+            f'{self.destroy_service.__name__} destroys instance with existing relations.'
+        )
