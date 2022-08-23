@@ -58,7 +58,7 @@ class BaseArchiveServiceTest:
         )
         assert are_same, (
             f'{self.archive_service.__class__.__name__} new instance data'
-            f'is not equal to old instance data'
+            f' is not equal to old instance data'
         )
         assert count + 1 == self.model.objects.count(), (
             f'{self.archive_service.__class__.__name__} does not create updated instance'
@@ -177,7 +177,7 @@ class BaseArchiveViewTest(BaseViewTest):
         url = reverse(self.basename + '-detail', args=[self.instance.id])
         response = self.client.put(url, self.update_data)
 
-        assert response.status_code == status.HTTP_200_OK, str(response.json())
+        assert response.status_code == status.HTTP_200_OK, str(response.data())
         assert count + 1 == self.model.objects.count()
         assert self.model.objects.filter(id=self.instance.id).exists()
         assert self.model.objects.get(id=self.instance.id).archived

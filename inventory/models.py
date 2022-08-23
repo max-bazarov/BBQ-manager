@@ -14,7 +14,7 @@ class Material(models.Model):
     name = models.CharField('material_name', max_length=255)
     unit = models.CharField(
         'material_measurment_units',
-        max_length=2,
+        max_length=3,
         choices=MaterialUnits.choices
     )
     price = models.DecimalField(

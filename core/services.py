@@ -28,6 +28,7 @@ class ArchiveService:
 
     def update(self, **kwargs) -> Model:
         kwargs = funcy.project(kwargs, [f.name for f in self.instance._meta.fields])
+        print(kwargs)
         if not kwargs:
             raise ValidationError('No data to update')
         self.archive()
