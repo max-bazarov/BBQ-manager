@@ -1,10 +1,13 @@
-from typing import Any
+import json
+from typing import Any, Optional
 
 from django.db.models import Model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.serializers import Serializer
 from service_objects.services import Service
+
+from core.services import ArchiveService
 
 
 class BaseTestsUtilMixin:
@@ -74,6 +77,9 @@ class BaseArchiveServiceTest:
 
     Note: Works with services, which are inherited from service_objects.services.Service only.
     '''
+    serializer_class: Optional[type[Serializer]]
+    instance: Model
+    archive_service: ArchiveService
 
     def test_archive(self):
         count = self.model.objects.count()
@@ -88,10 +94,10 @@ class BaseArchiveServiceTest:
 
     def test_update(self):
         count = self.model.objects.count()
-        new_instance = self.archive_service(self.instance).update(**self.update_data)
+        new_instance = self.archive_service(self.instance, serializer_class=self.serializer_class).update(**self.update_data)
         unchanged_fields = [
             f.name for f in self.instance._meta.fields
-            if f.name not in self.update_data and f.name != 'id'
+            if f.name not in self.update_data and f.name not in ['id', 'archived']
         ]
 
         are_same = all(
@@ -209,7 +215,7 @@ class BaseUpdateViewTest(BaseViewTest):
     '''
     update_data: dict[str, Any]
 
-    def test_update_view(self):
+    def test_update(self):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
         response = self.client.put(url, self.update_data)
@@ -223,7 +229,7 @@ class BaseUpdateViewTest(BaseViewTest):
             for k, v in self.update_data.items()
         )
 
-    def test_partial_update_view(self):
+    def test_partial_update(self):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
         response = self.client.patch(url, self.update_data)
@@ -278,6 +284,8 @@ class BaseCRUDViewTest(BaseCreateViewTest,
     '''
     pass
 
+from rest_framework.test import APITestCase
+
 
 class BaseArchiveViewTest(BaseViewTest):
     '''
@@ -295,13 +303,16 @@ class BaseArchiveViewTest(BaseViewTest):
     def test_update(self):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
+        print('test upd', self.update_data)
         response = self.client.put(url, self.update_data)
 
         assert response.status_code == status.HTTP_200_OK, str(response.data())
         assert count + 1 == self.model.objects.count()
         assert self.model.objects.filter(id=self.instance.id).exists()
         assert self.model.objects.get(id=self.instance.id).archived
-        assert response.json() == self.serializer(self.model.objects.last()).data
+        new_instance = self.model.objects.last()
+        assert not new_instance.archived
+        assert response.json() == self.serializer(new_instance).data
 
     def test_partial_update(self):
         count = self.model.objects.count()

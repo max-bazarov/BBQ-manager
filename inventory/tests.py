@@ -29,10 +29,14 @@ class TestMaterialService(TestCase,
         cls.model = Material
         cls.create_service = MaterialCreateService
         cls.archive_service = ArchiveService
+        cls.serializer_class = MaterialSerializer
 
         getcontext().prec = 2
         cls.update_data = {
-            'price': Decimal('12131.11'),
+
+
+            'price': Decimal('10'),
+
         }
         cls.data = {
             'name': 'Hair Color',
@@ -87,8 +91,7 @@ class TestMaterialService(TestCase,
 
 
 @pytest.mark.django_db
-class TestMaterialView(APITestCase,
-                       BaseCRUDArchiveViewTest):
+class TestMaterialView(APITestCase, BaseCRUDArchiveViewTest):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -97,13 +100,10 @@ class TestMaterialView(APITestCase,
         cls.model = Material
         getcontext().prec = 2
         cls.update_data = {
-            'price': 1.11,
+            'name': 'Hair Color 1',
+            'price': '1.11',
             'unit': MaterialUnits.GRAMMS.value
-        }
-        cls.update_data_without_changes = {
 
-            'price': 228,
-            # 'unit': MaterialUnits.GRAMMS.value
         }
         cls.data = {
             'name': 'Hair Color',
@@ -112,19 +112,19 @@ class TestMaterialView(APITestCase,
         }
         cls.instance = Material.objects.create(
             name='zizi',
-            price=228,
+            price=Decimal('228'),
             unit='GR'
         )
         cls.instance_with_relation = Material.objects.create(
             name='Haircut',
-            price=220,
+            price=Decimal('220'),
             unit='PC'
         )
         cls.employee = Employee.objects.create(
             first_name='name',
             last_name='surname',
             position='someone',
-            coefficient=1.11
+            coefficient=0.6
         )
         cls.procedure_with_master = Procedure.objects.create(name='master procedure')
         cls.master_procedure = MasterProcedure.objects.create(

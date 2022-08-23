@@ -12,7 +12,6 @@ from procedures.serializers import ProcedureSerializer
 
 from .models import Procedure
 from .serializers import ProcedureSerializer
-
 from .services import ProcedureService
 
 
