@@ -20,7 +20,8 @@ class MaterialViewSet(ModelViewSet,
     def update(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
-            updated_instance = ArchiveService(instance, self.serializer_class).update(**request.data)
+            updated_instance = ArchiveService(instance,
+                                              self.serializer_class).update(**request.data)
             return Response(MaterialSerializer(updated_instance).data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

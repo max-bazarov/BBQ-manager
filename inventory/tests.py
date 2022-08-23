@@ -105,6 +105,7 @@ class TestMaterialView(APITestCase, BaseCRUDArchiveViewTest):
             'unit': MaterialUnits.GRAMMS.value
 
         }
+
         cls.data = {
             'name': 'Hair Color',
             'price': 1.11,
@@ -154,14 +155,3 @@ class TestMaterialView(APITestCase, BaseCRUDArchiveViewTest):
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert count == self.model.objects.count()
-
-    def test_update_view_without_changes(self):
-        count = self.model.objects.count()
-        url = reverse(self.basename + '-detail', args=[self.instance.id])
-        response = self.client.put(url, self.update_data_without_changes)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST, str(response.json())
-        assert count == self.model.objects.count()
-        assert self.model.objects.filter(id=self.instance.id).exists()
-        assert self.model.objects.get(id=self.instance.id).archived
-        assert response.json() == self.serializer(self.model.objects.last()).data

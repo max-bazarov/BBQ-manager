@@ -29,6 +29,7 @@ class MaterialDestroyService:
     def destroy(self):
         if self.has_related():
             raise Exception(
-                f'Material cannot be deleted, because it is used material'
+                f'Material with id {self.instance.id} cannot be deleted, because it is used material'
             )
-        self.instance.delete()
+        self.model.objects.get(id=self.instance.id).delete()
+        return self.instance.id
