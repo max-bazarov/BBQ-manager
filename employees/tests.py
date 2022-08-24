@@ -43,6 +43,7 @@ class TestEmployeeDestroyService(TestCase,
 
 @pytest.mark.django_db
 class TestEmployeeViews(APITestCase, BaseCRUDViewTest):
+
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
