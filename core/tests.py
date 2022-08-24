@@ -222,12 +222,8 @@ class BaseUpdateViewTest(BaseViewTest):
         assert response.status_code == status.HTTP_200_OK, str(response.json())
         assert response.json() == self.serializer(instance).data
         assert count == self.model.objects.count()
-        assert all(
-            v == getattr(instance, k).id
-            if isinstance(getattr(instance, k), Model)
-            else v == getattr(instance, k)
-            for k, v in self.update_data.items()
-        )
+
+        self.check_update_data_same_fields_as_instance(instance)
 
     def test_partial_update(self):
         count = self.model.objects.count()
@@ -238,12 +234,15 @@ class BaseUpdateViewTest(BaseViewTest):
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == self.serializer(instance).data
         assert count == self.model.objects.count()
-        assert all(
-            v == getattr(instance, k).id
-            if isinstance(getattr(instance, k), Model)
-            else v == getattr(instance, k)
-            for k, v in self.update_data.items()
-        )
+        
+        self.check_update_data_same_fields_as_instance(instance)
+
+    def check_update_data_same_fields_as_instance(self, instance):
+        for k, v in self.update_data.items():
+            value = getattr(instance, k)
+            if isinstance(value, Model):
+                value = value.id
+            assert value == v
 
 
 class BaseDestroyViewTest(BaseViewTest):
