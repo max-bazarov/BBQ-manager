@@ -26,3 +26,6 @@ class Material(models.Model):
         'is_archived',
         default=False
     )
+
+    def __str__(self):
+        return self.name
