@@ -1,1 +1,0 @@
-[{"model": "inventory.material", "pk": 1, "fields": {"name": "shampoo", "unit": "PC", "price": "300.00", "archived": false}}, {"model": "inventory.material", "pk": 2, "fields": {"name": "paints", "unit": "PC", "price": "200.00", "archived": false}}, {"model": "inventory.material", "pk": 3, "fields": {"name": "hair balm", "unit": "GR", "price": "230.00", "archived": false}}]

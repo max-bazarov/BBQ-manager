@@ -1,1 +1,0 @@
-[{"model": "procedures.procedure", "pk": 1, "fields": {"name": "standart haircut"}}, {"model": "procedures.procedure", "pk": 2, "fields": {"name": "haircut with washing head"}}, {"model": "procedures.procedure", "pk": 3, "fields": {"name": "staining"}}]
