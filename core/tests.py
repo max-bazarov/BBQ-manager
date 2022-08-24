@@ -234,7 +234,7 @@ class BaseUpdateViewTest(BaseViewTest):
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == self.serializer(instance).data
         assert count == self.model.objects.count()
-        
+
         self.check_update_data_same_fields_as_instance(instance)
 
     def check_update_data_same_fields_as_instance(self, instance):
