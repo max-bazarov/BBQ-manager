@@ -30,12 +30,12 @@ class BaseService:
         self.partial = self._kwargs.get('partial', False)
         self.data = data
 
-    def has_related(self):
+    def has_related(self) -> bool:
         if not self.related_name:
             return False
         return getattr(self.instance, self.related_name).exists()
 
-    def is_all_related_archived(self):
+    def is_all_related_archived(self) -> bool:
         if not self.related_name:
             return True
         return not getattr(self.instance, self.related_name).filter(archived=False).exists()
@@ -55,7 +55,7 @@ class BaseService:
             return data
         return funcy.omit(data, ['id'])
 
-    def archive(self):
+    def archive(self) -> Model:
         if not hasattr(self.instance, 'archived'):
             raise FieldDoesNotExist(f'{self.model.__name__} does not have field archived.')
         self.instance.archived = True
