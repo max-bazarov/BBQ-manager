@@ -11,6 +11,62 @@ from service_objects.services import Service
 log = logging.getLogger(__name__)
 
 
+class BaseService:
+    '''
+    Base Service provides funcionality for basic operations with model instances.
+
+    Usage: use this class as a mixin for other services.
+    '''
+
+    model: type[Model]
+    serializer_class: Optional[type[Serializer]]
+
+    def __init__(self, instance: Optional[Model] = None,
+                 data: dict = None,
+                 **kwargs) -> None:
+        self.instance = instance
+        self._kwargs = kwargs
+        self.partial = self._kwargs.get('partial', False)
+        self.data = data
+
+    def _validate_data(self) -> dict:
+        # Returns a dict containing only those fields, which exists at model instance.
+
+        if len(self.data) == 0:
+            raise ValidationError('No data to update.')
+
+        if self.instance:
+            instance_data = self._get_instance_data()
+            if instance_data == instance_data.update(self.data):
+                raise Exception('Nothing to change.')
+
+        # data = funcy.omit(self.data, ['id'])
+        serializer = self.serializer_class(data=self.data, partial=self.partial)
+        serializer.is_valid(raise_exception=True)
+        return serializer.validated_data
+
+    def _get_instance_data(self, omit_id: bool = True) -> dict:
+        '''Is needed for validation that we do not save the same data twice.'''
+
+        data = {}
+        for field in self.instance._meta.fields:
+            data[field.name] = getattr(self.instance, field.name)
+        if not omit_id:
+            return data
+        return funcy.omit(data, ['id'])
+
+    def update(self) -> Model:
+        validated_data = self._validate_data()
+        return self.model.objects.save(self.instance, validated_data)
+
+    def create(self) -> Model:
+        return self.model.objects.get_or_create(**self._validate_data())
+
+    def destroy(self) -> int:
+        self.model.objects.get(id=self.instance.id).delete()
+        return self.instance.id
+
+
 class ModelCreateService:
 
     def process(self):
