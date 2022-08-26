@@ -3,7 +3,7 @@ from django.db.models import ManyToManyField, Model
 
 class BaseTestsUtilMixin:
     model: type[Model]
-    isntance: Model
+    instance: Model
 
     def get_count(self) -> int:
         return self.model.objects.count()
@@ -11,7 +11,7 @@ class BaseTestsUtilMixin:
     def get_instance(self, id) -> Model:
         return self.model.objects.get(id=id)
 
-    def is_isntance_exists(self, **kwargs) -> bool:
+    def is_instance_exists(self, **kwargs) -> bool:
         return self.model.objects.filter(**kwargs).exists()
 
     def get_instance_data(self) -> dict:

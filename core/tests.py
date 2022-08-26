@@ -2,6 +2,7 @@ from typing import Any, Optional
 
 import funcy
 from django.db.models import Model
+from django.db.models.query import QuerySet
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.serializers import Serializer
@@ -55,7 +56,7 @@ class NewBaseCreateTestMixin(BaseTest):
         self.service(data=self.data).create()
 
         assert self.get_count() == count + 1
-        assert self.is_isntance_exists(**self.data)
+        assert self.is_instance_exists(**self.data)
 
     def test_create_with_invalid_data(self):
         count = self.get_count()
@@ -72,14 +73,14 @@ class NewBaseUpdateTestMixin(BaseTest):
     ''''''
     update_data: dict[str, Any]
 
-    def test_update(self):
+    def test_partial_update(self):
         count = self.get_count()
         unchanged_data = funcy.omit(self.get_instance_data(), self.update_data)
-        self.service(instance=self.instance, data=self.update_data).update()
+        self.service(instance=self.instance, data=self.update_data, partial=True).update()
         instance = self.get_instance(id=self.instance.id)
 
         assert self.get_count() == count
-        assert self.is_isntance_exists(**self.update_data)
+        assert self.is_instance_exists(**self.update_data)
         for k, v in unchanged_data.items():
             assert v == getattr(instance, k)
 
@@ -91,10 +92,12 @@ class NewBaseDestroyTestMixin(BaseTest):
         self.service(self.instance).destroy()
 
         assert self.get_count() == count - 1
-        assert not self.is_isntance_exists(id=self.instance.id)
+        assert not self.is_instance_exists(id=self.instance.id)
 
 
 class NewBaseDestroyWithRelationsTestMixin(BaseTest):
+    instance_with_relation: Model
+    relations_queryset: QuerySet
 
     def test_destroy_with_unarchived_relation(self):
         count = self.get_count()
