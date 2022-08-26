@@ -9,7 +9,6 @@ from core.tests import (BaseCRUDArchiveViewTest, NewBaseCreateTestMixin,
                         NewBaseDestroyTestMixin,
                         NewBaseDestroyWithUnarchivedRelationsTestMixin,
                         NewBaseUpdateTestMixin)
-
 from purchases.models import UsedMaterial
 
 from .models import Material, MaterialUnits
@@ -17,11 +16,11 @@ from .serializers import MaterialSerializer
 from .services import MaterialService
 
 
-class TestNewMaterialService(TestCase,
-                             NewBaseCreateTestMixin,
-                             NewBaseUpdateTestMixin,
-                             NewBaseDestroyTestMixin,
-                             NewBaseDestroyWithUnarchivedRelationsTestMixin):
+class TestMaterialService(TestCase,
+                          NewBaseCreateTestMixin,
+                          NewBaseUpdateTestMixin,
+                          NewBaseDestroyTestMixin,
+                          NewBaseDestroyWithUnarchivedRelationsTestMixin):
     model = Material
     service = MaterialService
 
