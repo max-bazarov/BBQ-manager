@@ -1,6 +1,3 @@
-from datetime import datetime
-from decimal import Decimal, getcontext
-
 import pytest
 from django.test import TestCase
 from django.urls import reverse
@@ -12,9 +9,8 @@ from core.tests import (BaseCRUDArchiveViewTest, NewBaseCreateTestMixin,
                         NewBaseDestroyTestMixin,
                         NewBaseDestroyWithUnarchivedRelationsTestMixin,
                         NewBaseUpdateTestMixin)
-from employees.models import Employee, MasterProcedure
-from procedures.models import Procedure
-from purchases.models import Purchase, PurchaseProcedure, UsedMaterial
+
+from purchases.models import UsedMaterial
 
 from .models import Material, MaterialUnits
 from .serializers import MaterialSerializer
@@ -55,12 +51,10 @@ class TestMaterialView(APITestCase, BaseCRUDArchiveViewTest):
         cls.basename = 'material'
         cls.serializer = MaterialSerializer
         cls.model = Material
-        getcontext().prec = 2
         cls.update_data = {
             'name': 'Hair Color 1',
             'price': '1.11',
             'unit': MaterialUnits.GRAMMS.value
-
         }
 
         cls.data = {
@@ -68,42 +62,9 @@ class TestMaterialView(APITestCase, BaseCRUDArchiveViewTest):
             'price': 1.11,
             'unit': MaterialUnits.GRAMMS.value
         }
-        cls.instance = Material.objects.create(
-            name='zizi',
-            price=Decimal('228'),
-            unit='GR'
-        )
-        cls.instance_with_relation = Material.objects.create(
-            name='Haircut',
-            price=Decimal('220'),
-            unit='PC'
-        )
-        cls.employee = Employee.objects.create(
-            first_name='name',
-            last_name='surname',
-            position='someone',
-            coefficient=0.6
-        )
-        cls.procedure_with_master = Procedure.objects.create(name='master procedure')
-        cls.master_procedure = MasterProcedure.objects.create(
-            procedure=cls.procedure_with_master,
-            employee=cls.employee,
-            price=Decimal(1),
-            coefficient=0.5,
-        )
-        cls.purchase = Purchase.objects.create(
-            time=datetime.now(),
-            is_paid_by_card=False,
-        )
-        cls.purchase_procedure = PurchaseProcedure.objects.create(
-            purchase=cls.purchase,
-            procedure=cls.master_procedure
-        )
-        UsedMaterial.objects.create(
-            procedure=cls.purchase_procedure,
-            material=cls.instance_with_relation,
-            amount=1
-        )
+        cls.instance = mixer.blend(Material)
+        cls.instance_with_relation = mixer.blend(Material)
+        mixer.blend(UsedMaterial, material=cls.instance_with_relation)
 
     def test_destroy_view_with_relation(self):
         count = self.model.objects.count()
