@@ -95,7 +95,7 @@ class NewBaseDestroyTestMixin(BaseTest):
         assert not self.is_instance_exists(id=self.instance.id)
 
 
-class NewBaseDestroyWithRelationsTestMixin(BaseTest):
+class NewBaseDestroyWithUnarchivedRelationsTestMixin(BaseTest):
     instance_with_relation: Model
     relations_queryset: QuerySet
 
@@ -110,6 +110,11 @@ class NewBaseDestroyWithRelationsTestMixin(BaseTest):
 
         assert self.get_count() == count
         assert not self.get_instance(self.instance_with_relation.id).archived
+
+
+class NewBaseDestroyWithArchivedRelationsTestMixin(BaseTest):
+    instance_with_relation: Model
+    relations_queryset: QuerySet
 
     def test_destroy_with_archived_relation(self):
         self.relations_queryset.update(archived=True)
