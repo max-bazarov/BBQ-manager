@@ -1,44 +1,44 @@
-from decimal import Decimal
-
 import pytest
 from django.test import TestCase
+from mixer.backend.django import mixer
 from rest_framework.test import APITestCase
 
-from core.tests import (BaseCRUDViewTest,
-                        DestroyInstancesWithRelationalDependenciesTestMixin)
+from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
+                        NewBaseDestroyTestMixin,
+                        NewBaseDestroyWithRelationsTestMixin,
+                        NewBaseUpdateTestMixin)
 from employees.models import Employee, MasterProcedure
 from employees.serializers import EmployeeSerializer
-from employees.services import EmployeeService
-from procedures.models import Procedure
+from employees.services import NewEmployeeService
 
 
-class TestEmployeeDestroyService(TestCase,
-                                 DestroyInstancesWithRelationalDependenciesTestMixin):
+class TestNewEmployeeService(TestCase,
+                             NewBaseCreateTestMixin,
+                             NewBaseUpdateTestMixin,
+                             NewBaseDestroyTestMixin,
+                             NewBaseDestroyWithRelationsTestMixin):
+    model = Employee
+    service = NewEmployeeService
 
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        cls.model = Employee
-        cls.destroy_service = EmployeeService
-        cls.instance = Employee.objects.create(
-            first_name='Yakov',
-            last_name='Varnaev',
-            position='developer',
-            coefficient=0.5
-        )
-        cls.instance_with_relation = Employee.objects.create(
-            first_name='Yakovv',
-            last_name='Varnaevv',
-            position='developerr',
-            coefficient=0.5
-        )
-        cls.procedure_with_master = Procedure.objects.create(name='master procedure')
-        MasterProcedure.objects.create(
-            procedure=cls.procedure_with_master,
-            employee=cls.instance_with_relation,
-            price=Decimal(1),
-            coefficient=0.5
-        )
+        cls.data = {
+            'first_name': 'Yakov',
+            'last_name': 'Yakov',
+            'position': 'CTO',
+            'coefficient': '0.82'
+        }
+        cls.invalid_data = {
+            'last_name': 52
+        }
+        cls.update_data = {
+            'position': 'Senior Backend Developer'
+        }
+        cls.instance = mixer.blend(cls.model)
+        cls.instance_with_relation = mixer.blend(cls.model)
+        mixer.blend(MasterProcedure, employee=cls.instance_with_relation)
+        cls.relations_queryset = cls.instance_with_relation.procedures.all()
 
 
 @pytest.mark.django_db
