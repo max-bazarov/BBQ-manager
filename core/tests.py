@@ -1,18 +1,14 @@
 from typing import Any, Optional
+
+import funcy
 from django.db.models import Model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.serializers import Serializer
 from service_objects.services import Service
 
-from core.services import ArchiveService
-
-
-class BaseTestsUtilMixin:
-    model: type[Model]
-
-    def get_count(self) -> int:
-        return self.model.objects.count()
+from core.mixins.tests import BaseTestsUtilMixin
+from core.services import ArchiveService, BaseService
 
 
 class BaseCreateServiceTest:
@@ -42,6 +38,83 @@ class BaseCreateServiceTest:
         )
         for k, v in self.data.items():
             assert v == getattr(instance, k)
+
+
+class BaseTest(BaseTestsUtilMixin):
+    model: type[Model]
+    service: type[BaseService]
+
+
+class NewBaseCreateTestMixin(BaseTest):
+    ''''''
+    data: dict[str, Any]
+    invalid_data: dict[str, Any]
+
+    def test_create(self):
+        count = self.get_count()
+        self.service(data=self.data).create()
+
+        assert self.get_count() == count + 1
+        assert self.is_isntance_exists(**self.data)
+
+    def test_create_with_invalid_data(self):
+        count = self.get_count()
+        try:
+            self.service(data=self.invalid_data).create()
+        except:
+            pass
+        else:
+            assert False, f'{self.service.__name__} creates instances with invalid data.'
+        assert self.get_count() == count
+
+
+class NewBaseUpdateTestMixin(BaseTest):
+    ''''''
+    update_data: dict[str, Any]
+
+    def test_update(self):
+        count = self.get_count()
+        unchanged_data = funcy.omit(self.get_instance_data(), self.update_data)
+        self.service(instance=self.instance, data=self.update_data).update()
+        instance = self.get_instance(id=self.instance.id)
+
+        assert self.get_count() == count
+        assert self.is_isntance_exists(**self.update_data)
+        for k, v in unchanged_data.items():
+            assert v == getattr(instance, k)    
+
+
+class NewBaseDestroyTestMixin(BaseTest):
+
+    def test_destroy(self):
+        count = self.get_count()
+        self.service(self.instance).destroy()
+
+        assert self.get_count() == count - 1
+        assert not self.is_isntance_exists(id=self.instance.id)
+
+
+class NewBaseDestroyWithRelationsTestMixin(BaseTest):
+    
+    def test_destroy_with_unarchived_relation(self):
+        count = self.get_count()
+        try:
+            self.service(self.instance_with_relation).destroy()
+        except:
+            pass
+        else:
+            assert False, 'Need to throw exception'
+
+        assert self.get_count() == count
+        assert not self.get_instance(self.instance_with_relation.id).archived
+
+    def test_destroy_with_archived_relation(self):
+        self.relations_queryset.update(archived=True)
+        count = self.get_count()
+        self.service(self.instance_with_relation).destroy()
+
+        assert self.get_count() == count
+        assert self.get_instance(self.instance_with_relation.id).archived
 
 
 class BaseDestroyServiceTest:
@@ -324,7 +397,7 @@ class BaseArchiveViewTest(BaseViewTest):
         assert response.json() == self.serializer(self.model.objects.last()).data
 
     def test_archive(self):
-        url = reverse(self.basename + '-archive', args=[self.instance.id])
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
         response = self.client.put(url)
 
         assert response.status_code == status.HTTP_200_OK

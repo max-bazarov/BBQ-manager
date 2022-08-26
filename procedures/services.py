@@ -3,9 +3,11 @@ from typing import Optional
 from django import forms
 from service_objects.services import Service
 
+from core.services import BaseService
 from employees.models import MasterProcedure
 
 from .models import Procedure
+from .serializers import ProcedureSerializer
 
 
 class ProcedureServiceFields(Service):
@@ -32,3 +34,9 @@ class ProcedureService:
 
     def create(self) -> Procedure:
         return self.model.objects.get_or_create(**self.kwargs)[0]
+
+
+class ProcedureNewService(BaseService):
+    model = Procedure
+    serializer_class = ProcedureSerializer
+    related_name = 'employees'

@@ -4,7 +4,7 @@ from typing import Optional
 import funcy
 from django import forms
 from django.core.exceptions import FieldDoesNotExist, ValidationError
-from django.db.models import Model
+from django.db.models import Count, Model
 from rest_framework.serializers import Serializer
 from service_objects.services import Service
 
@@ -20,6 +20,7 @@ class BaseService:
 
     model: type[Model]
     serializer_class: Optional[type[Serializer]]
+    related_name: str
 
     def __init__(self, instance: Optional[Model] = None,
                  data: dict = None,
@@ -28,18 +29,19 @@ class BaseService:
         self._kwargs = kwargs
         self.partial = self._kwargs.get('partial', False)
         self.data = data
+    
+    def has_related(self):
+        if not self.related_name:
+            return False
+        return getattr(self.instance, self.related_name).exists()
+    
+    def is_all_related_archived(self):
+        if not self.related_name:
+            return True
+        return not getattr(self.instance, self.related_name).filter(archived=False).exists()
+
 
     def _validate_data(self) -> dict:
-        # Returns a dict containing only those fields, which exists at model instance.
-
-        if len(self.data) == 0:
-            raise ValidationError('No data to update.')
-
-        if self.instance:
-            instance_data = self._get_instance_data()
-            if instance_data == instance_data.update(self.data):
-                raise Exception('Nothing to change.')
-
         # data = funcy.omit(self.data, ['id'])
         serializer = self.serializer_class(data=self.data, partial=self.partial)
         serializer.is_valid(raise_exception=True)
@@ -55,14 +57,31 @@ class BaseService:
             return data
         return funcy.omit(data, ['id'])
 
+    def archive(self):
+        if not hasattr(self.instance, 'archived'):
+            raise FieldDoesNotExist(f'{self.model.__name__} does not have field archived.')
+        self.instance.archived = True
+        self.instance.save()
+        return self.instance
+
     def update(self) -> Model:
-        validated_data = self._validate_data()
-        return self.model.objects.save(self.instance, validated_data)
+        for k, v in self._validate_data().items():
+            setattr(self.instance, k, v)
+        self.instance.save()
+        return self.instance
 
     def create(self) -> Model:
         return self.model.objects.get_or_create(**self._validate_data())
 
     def destroy(self) -> int:
+        if self.has_related():
+            if self.is_all_related_archived():
+                self.archive()
+                return self.instance.id
+            raise ValidationError(
+                f'Instance of model {self.model.__name__} cannot be deleted '
+                'as it has unarchived related objects.'
+            )
         self.model.objects.get(id=self.instance.id).delete()
         return self.instance.id
 
