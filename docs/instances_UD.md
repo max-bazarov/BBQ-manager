@@ -11,7 +11,12 @@ MasterProcedure, Material.
 We cannot update or delete instances of this models as it affects historic data, this is anacceptable in our case. So, we must archive this 
 instances and create new in order to prevent historic data damaging.
 
-Algorithm:
+### Exceptions:
+
+- MasterProcedure: deletable only if it is not linked to any other instances.
+- Material: deletable only if it is not linked to any other instances.
+
+### Algorithm:
 
 1. Request for UD operation.
 2. Mark initial inctance as archived
