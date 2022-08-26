@@ -8,7 +8,8 @@ from rest_framework.test import APITestCase
 from core.mixins.tests import BaseTestsUtilMixin
 from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
                         NewBaseDestroyTestMixin,
-                        NewBaseDestroyWithRelationsTestMixin,
+                        NewBaseDestroyWithArchivedRelationsTestMixin,
+                        NewBaseDestroyWithUnarchivedRelationsTestMixin,
                         NewBaseUpdateTestMixin)
 from employees.models import MasterProcedure
 
@@ -22,7 +23,8 @@ class TestProcedureService(TestCase,
                            NewBaseCreateTestMixin,
                            NewBaseUpdateTestMixin,
                            NewBaseDestroyTestMixin,
-                           NewBaseDestroyWithRelationsTestMixin):
+                           NewBaseDestroyWithArchivedRelationsTestMixin,
+                           NewBaseDestroyWithUnarchivedRelationsTestMixin):
     model = Procedure
     service = ProcedureNewService
 

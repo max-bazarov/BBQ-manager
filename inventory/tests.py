@@ -4,90 +4,47 @@ from decimal import Decimal, getcontext
 import pytest
 from django.test import TestCase
 from django.urls import reverse
+from mixer.backend.django import mixer
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.services import ArchiveService
-from core.tests import (BaseArchiveServiceTest, BaseCreateServiceTest,
-                        BaseCRUDArchiveViewTest)
+from core.tests import (BaseCRUDArchiveViewTest, NewBaseCreateTestMixin,
+                        NewBaseDestroyTestMixin,
+                        NewBaseDestroyWithUnarchivedRelationsTestMixin,
+                        NewBaseUpdateTestMixin)
 from employees.models import Employee, MasterProcedure
 from procedures.models import Procedure
 from purchases.models import Purchase, PurchaseProcedure, UsedMaterial
 
 from .models import Material, MaterialUnits
 from .serializers import MaterialSerializer
-from .services import MaterialCreateService, MaterialDestroyService
+from .services import MaterialService
 
 
-@pytest.mark.django_db
-class TestMaterialService(TestCase,
-                          BaseCreateServiceTest,
-                          BaseArchiveServiceTest):
+class TestNewMaterialService(TestCase,
+                             NewBaseCreateTestMixin,
+                             NewBaseUpdateTestMixin,
+                             NewBaseDestroyTestMixin,
+                             NewBaseDestroyWithUnarchivedRelationsTestMixin):
+    model = Material
+    service = MaterialService
+
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         super().setUpClass()
-        cls.model = Material
-        cls.create_service = MaterialCreateService
-        cls.archive_service = ArchiveService
-        cls.serializer_class = MaterialSerializer
-
-        getcontext().prec = 2
-        cls.update_data = {
-
-
-            'price': Decimal('10'),
-
-        }
+        cls.instance = mixer.blend(cls.model)
+        cls.instance_with_relation = mixer.blend(cls.model)
+        mixer.blend(UsedMaterial, material=cls.instance_with_relation)
+        cls.relations_queryset = cls.instance_with_relation.uses.all()
         cls.data = {
-            'name': 'Hair Color',
-            'price': Decimal('1.11'),
-            'unit': MaterialUnits.GRAMMS.value
+            'name': 'some material',
+            'unit': MaterialUnits.GRAMMS.value,
+            'price': '1.00',
         }
-
-        cls.instance = Material.objects.create(
-            name='Haircut',
-            price=220,
-            unit='PC'
-        )
-        cls.employee = Employee.objects.create(
-            first_name='name',
-            last_name='surname',
-            position='someone',
-            coefficient=1.11
-        )
-        cls.procedure_with_master = Procedure.objects.create(name='master procedure')
-        cls.master_procedure = MasterProcedure.objects.create(
-            procedure=cls.procedure_with_master,
-            employee=cls.employee,
-            price=Decimal(1),
-            coefficient=0.5,
-        )
-        cls.purchase = Purchase.objects.create(
-            time=datetime.now(),
-            is_paid_by_card=False,
-        )
-        cls.purchase_procedure = PurchaseProcedure.objects.create(
-            purchase=cls.purchase,
-            procedure=cls.master_procedure
-        )
-        UsedMaterial.objects.create(
-            procedure=cls.purchase_procedure,
-            material=cls.instance,
-            amount=1
-        )
-
-    def test_destroy(self):
-        count = Material.objects.count()
-        try:
-            MaterialDestroyService(self.instance).destroy()
-        except Exception:
-            pass
-        else:
-            assert False, ('Service must raise exception.')
-
-        assert Material.objects.count() == count, (
-            f'{MaterialDestroyService.__name__} does not delete instance after destroy.'
-        )
+        cls.invalid_data = {'price': 'test'}
+        cls.update_data = {
+            'name': 'Haircolor'
+        }
 
 
 @pytest.mark.django_db

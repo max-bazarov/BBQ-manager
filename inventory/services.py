@@ -1,9 +1,10 @@
 from django import forms
 from service_objects.services import Service
 
-from core.services import ModelCreateService
+from core.services import BaseService, ModelCreateService
 
 from .models import Material
+from .serializers import MaterialSerializer
 
 
 class BaseMaterialService(Service):
@@ -33,3 +34,9 @@ class MaterialDestroyService:
             )
         self.model.objects.get(id=self.instance.id).delete()
         return self.instance.id
+
+
+class MaterialService(BaseService):
+    model = Material
+    serializer_class = MaterialSerializer
+    related_name = 'uses'

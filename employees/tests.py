@@ -5,7 +5,8 @@ from rest_framework.test import APITestCase
 
 from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
                         NewBaseDestroyTestMixin,
-                        NewBaseDestroyWithRelationsTestMixin,
+                        NewBaseDestroyWithArchivedRelationsTestMixin,
+                        NewBaseDestroyWithUnarchivedRelationsTestMixin,
                         NewBaseUpdateTestMixin)
 from employees.models import Employee, MasterProcedure
 from employees.serializers import EmployeeSerializer
@@ -16,7 +17,8 @@ class TestNewEmployeeService(TestCase,
                              NewBaseCreateTestMixin,
                              NewBaseUpdateTestMixin,
                              NewBaseDestroyTestMixin,
-                             NewBaseDestroyWithRelationsTestMixin):
+                             NewBaseDestroyWithArchivedRelationsTestMixin,
+                             NewBaseDestroyWithUnarchivedRelationsTestMixin):
     model = Employee
     service = NewEmployeeService
 
