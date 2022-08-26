@@ -1,17 +1,18 @@
-import pytest
+from datetime import datetime
 from decimal import Decimal
+
+import pytest
 from django.test import TestCase
 from rest_framework.test import APITestCase
-from datetime import datetime
 
 from core.tests import BaseCRUDViewTest
 from employees.models import Employee, MasterProcedure
-from procedures.models import Procedure
 from inventory.models import Material, MaterialUnits
+from procedures.models import Procedure
 
-from .models import UsedMaterial, Purchase, PurchaseProcedure
-from .services import UsedMaterialService
+from .models import Purchase, PurchaseProcedure, UsedMaterial
 from .serializers import UsedMaterialSerializer
+from .services import UsedMaterialService
 
 
 @pytest.mark.django_db

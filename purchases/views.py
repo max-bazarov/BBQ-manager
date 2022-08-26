@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
-from .serializers import UsedMaterialSerializer
 from .models import UsedMaterial
+from .serializers import UsedMaterialSerializer
 
 
 class UsedMaterialViewSet(ModelViewSet):
