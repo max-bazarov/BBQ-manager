@@ -10,9 +10,9 @@ from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
                         NewBaseUpdateTestMixin)
 from employees.models import Employee, MasterProcedure
 from employees.serializers import EmployeeSerializer
-from employees.services import NewEmployeeService, MasterProcedureService
-from purchases.models import PurchaseProcedure
+from employees.services import MasterProcedureService, NewEmployeeService
 from procedures.models import Procedure
+from purchases.models import PurchaseProcedure
 
 
 class TestNewEmployeeService(TestCase,

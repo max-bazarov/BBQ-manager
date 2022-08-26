@@ -3,10 +3,10 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from employees.services import MasterProcedureService, NewEmployeeService
-from procedures.serializers import ProcedureSerializer
 
 from .models import Employee, MasterProcedure
-from .serializers import EmployeeSerializer, MasterProcedureListSerializer, MasterProcedureSerializer
+from .serializers import (EmployeeSerializer, MasterProcedureListSerializer,
+                          MasterProcedureSerializer)
 
 
 class EmployeeViewSet(ModelViewSet):
