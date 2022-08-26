@@ -10,7 +10,7 @@ class Purchase(models.Model):
     is_paid_by_card = models.BooleanField(default=False)
     procedures = models.ManyToManyField(
         'employees.MasterProcedure',
-        related_name='procedures',
+        related_name='purchases',
         through='PurchaseProcedure'
     )
 
