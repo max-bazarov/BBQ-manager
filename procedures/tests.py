@@ -42,8 +42,6 @@ class TestProcedureService(TestCase,
         cls.invalid_data = {}
 
 
-
-
 @pytest.mark.django_db
 class TestProcedureViews(APITestCase, BaseCRUDViewTest, BaseTestsUtilMixin):
     model = Procedure
@@ -71,7 +69,7 @@ class TestProcedureViews(APITestCase, BaseCRUDViewTest, BaseTestsUtilMixin):
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert self.get_count() == count - 1
-    
+
     def test_delete_with_unarchived_relation(self):
         count = self.get_count()
         url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])

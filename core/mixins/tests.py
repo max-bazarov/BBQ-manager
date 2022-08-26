@@ -1,5 +1,3 @@
-from readline import insert_text
-
 from django.db.models import ManyToManyField, Model
 
 

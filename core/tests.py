@@ -61,7 +61,7 @@ class NewBaseCreateTestMixin(BaseTest):
         count = self.get_count()
         try:
             self.service(data=self.invalid_data).create()
-        except:
+        except Exception:
             pass
         else:
             assert False, f'{self.service.__name__} creates instances with invalid data.'
@@ -81,7 +81,7 @@ class NewBaseUpdateTestMixin(BaseTest):
         assert self.get_count() == count
         assert self.is_isntance_exists(**self.update_data)
         for k, v in unchanged_data.items():
-            assert v == getattr(instance, k)    
+            assert v == getattr(instance, k)
 
 
 class NewBaseDestroyTestMixin(BaseTest):
@@ -95,12 +95,12 @@ class NewBaseDestroyTestMixin(BaseTest):
 
 
 class NewBaseDestroyWithRelationsTestMixin(BaseTest):
-    
+
     def test_destroy_with_unarchived_relation(self):
         count = self.get_count()
         try:
             self.service(self.instance_with_relation).destroy()
-        except:
+        except Exception:
             pass
         else:
             assert False, 'Need to throw exception'

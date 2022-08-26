@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from procedures.services import ProcedureNewService, ProcedureService
+from procedures.services import ProcedureNewService
 
 from .models import Procedure
 from .serializers import ProcedureSerializer

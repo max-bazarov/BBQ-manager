@@ -4,7 +4,7 @@ from typing import Optional
 import funcy
 from django import forms
 from django.core.exceptions import FieldDoesNotExist, ValidationError
-from django.db.models import Count, Model
+from django.db.models import Model
 from rest_framework.serializers import Serializer
 from service_objects.services import Service
 
@@ -29,20 +29,18 @@ class BaseService:
         self._kwargs = kwargs
         self.partial = self._kwargs.get('partial', False)
         self.data = data
-    
+
     def has_related(self):
         if not self.related_name:
             return False
         return getattr(self.instance, self.related_name).exists()
-    
+
     def is_all_related_archived(self):
         if not self.related_name:
             return True
         return not getattr(self.instance, self.related_name).filter(archived=False).exists()
 
-
     def _validate_data(self) -> dict:
-        # data = funcy.omit(self.data, ['id'])
         serializer = self.serializer_class(data=self.data, partial=self.partial)
         serializer.is_valid(raise_exception=True)
         return serializer.validated_data
