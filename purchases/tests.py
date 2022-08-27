@@ -1,11 +1,12 @@
 from datetime import datetime
 from decimal import Decimal
 
+from mixer.backend.django import mixer
 import pytest
 from django.test import TestCase
 from rest_framework.test import APITestCase
 
-from core.tests import BaseCRUDViewTest
+from core.tests import BaseCRUDViewTest, NewBaseCreateTestMixin, NewBaseDestroyTestMixin, NewBaseUpdateTestMixin
 from employees.models import Employee, MasterProcedure
 from inventory.models import Material, MaterialUnits
 from procedures.models import Procedure
@@ -14,6 +15,30 @@ from .models import Purchase, PurchaseProcedure, UsedMaterial
 from .serializers import UsedMaterialSerializer
 from .services import UsedMaterialService
 
+
+class TestUsedMaterialServiceNew(TestCase,
+                                 NewBaseCreateTestMixin,
+                                 NewBaseDestroyTestMixin,
+                                 NewBaseUpdateTestMixin):
+    model = UsedMaterial
+    service = UsedMaterialService
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.instance = mixer.blend(cls.model)
+        cls.relations_queryset = cls.instance_with_relation.procedures.all()
+        cls.data = {
+            'quantity': 1,
+            'material': cls.instance.id,
+            'procedure': cls.instance_with_relation.id
+        }
+        cls.update_data = {
+            'quantity': 2,
+            'material': cls.instance.id,
+            'procedure': cls.instance_with_relation.id
+        }
+        cls.invalid_data = {}
 
 @pytest.mark.django_db
 class TestUsedMaterialService(TestCase):
