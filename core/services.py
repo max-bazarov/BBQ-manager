@@ -21,6 +21,7 @@ class BaseService:
     model: type[Model]
     serializer_class: Optional[type[Serializer]]
     related_name: str
+    archivable_relation: bool = True
 
     def __init__(self, instance: Optional[Model] = None,
                  data: dict = None,
@@ -29,6 +30,7 @@ class BaseService:
         self._kwargs = kwargs
         self.partial = self._kwargs.get('partial', False)
         self.data = data
+        print(self.model.__name__, hasattr(self.model, 'archive'))
 
     def has_related(self) -> bool:
         if not self.related_name:
@@ -72,8 +74,9 @@ class BaseService:
         return self.model.objects.get_or_create(**self._validate_data())
 
     def destroy(self) -> int:
+        print('destroy', self.instance, hasattr(self.model, 'archived'))
         if self.has_related():
-            if self.is_all_related_archived():
+            if self.archivable_relation and self.is_all_related_archived():
                 self.archive()
                 return self.instance.id
             raise ValidationError(
