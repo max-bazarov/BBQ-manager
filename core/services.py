@@ -20,7 +20,7 @@ class BaseService:
 
     model: type[Model]
     serializer_class: Optional[type[Serializer]]
-    related_name: str
+    related_name: str = None
     archivable_relation: bool = True
 
     def __init__(self, instance: Optional[Model] = None,
