@@ -1,17 +1,9 @@
-from typing import Optional
+from core.services import BaseService
 
 from .models import UsedMaterial
+from .serializers import UsedMaterialSerializer
 
 
-class UsedMaterialService:
-
-    def __init__(self, instance: Optional[UsedMaterial] = None, **kwargs):
-        self.instance = instance
-        self.model = UsedMaterial
-        self.kwargs = kwargs
-
-    def destroy(self):
-        self.model.objects.get(id=self.instance.id).delete()
-
-    def create(self) -> UsedMaterial:
-        return self.model.objects.get_or_create(**self.kwargs)[0]
+class UsedMaterialService(BaseService):
+    model = UsedMaterial
+    serializer_class = UsedMaterialSerializer
