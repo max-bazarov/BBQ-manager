@@ -5,7 +5,6 @@ from mixer.backend.django import mixer
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.mixins.tests import BaseTestsUtilMixin
 from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
                         NewBaseDestroyTestMixin,
                         NewBaseDestroyWithArchivedRelationsTestMixin,
