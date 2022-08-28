@@ -200,7 +200,7 @@ class BaseArchiveServiceTest:
         )
 
 
-class BaseViewTest:
+class BaseViewTest(BaseTestsUtilMixin):
     '''
     Class for defining base attrs of Base View tests.
     '''
@@ -472,3 +472,31 @@ class DestroyInstancesWithRelationalDependenciesTestMixin(BaseTestsUtilMixin):
         assert count == self.get_count(), (
             f'{self.destroy_service.__name__} destroys instance with existing relations.'
         )
+
+
+class BaseDestroyWithUnarchivedRelationsViewTest(BaseViewTest):
+    instance_with_relation: Model
+
+    def test_delete_with_unarchived_relation_view(self):
+        count = self.get_count()
+        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
+        response = self.client.delete(url)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert self.get_count() == count
+        assert not self.get_instance(self.instance_with_relation.id).archived
+
+
+class BaseDestroyWithArchivedRelationsViewTest(BaseViewTest):
+    instance_with_relation: Model
+    relations_queryset: QuerySet
+
+    def test_delete_with_archived_relation_view(self):
+        self.relations_queryset.update(archived=True)
+        count = self.get_count()
+        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
+        response = self.client.delete(url)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT, response.json()
+        assert self.get_count() == count
+        assert self.get_instance(self.instance_with_relation.id).archived

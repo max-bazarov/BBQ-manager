@@ -5,12 +5,12 @@ from mixer.backend.django import mixer
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.mixins.tests import BaseTestsUtilMixin
 from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
                         NewBaseDestroyTestMixin,
                         NewBaseDestroyWithArchivedRelationsTestMixin,
                         NewBaseDestroyWithUnarchivedRelationsTestMixin,
-                        NewBaseUpdateTestMixin)
+                        NewBaseUpdateTestMixin, BaseDestroyWithUnarchivedRelationsViewTest,
+                        BaseDestroyWithArchivedRelationsViewTest)
 from employees.models import MasterProcedure
 
 from .models import Procedure
@@ -45,7 +45,10 @@ class TestProcedureService(TestCase,
 
 
 @pytest.mark.django_db
-class TestProcedureViews(APITestCase, BaseCRUDViewTest, BaseTestsUtilMixin):
+class TestProcedureViews(APITestCase,
+                         BaseCRUDViewTest,
+                         BaseDestroyWithUnarchivedRelationsViewTest,
+                         BaseDestroyWithArchivedRelationsViewTest):
     model = Procedure
     serializer = ProcedureSerializer
     basename = 'procedure'
@@ -71,22 +74,3 @@ class TestProcedureViews(APITestCase, BaseCRUDViewTest, BaseTestsUtilMixin):
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert self.get_count() == count - 1
-
-    def test_delete_with_unarchived_relation(self):
-        count = self.get_count()
-        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
-        response = self.client.delete(url)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert self.get_count() == count
-        assert not self.get_instance(self.instance_with_relation.id).archived
-
-    def test_delete_with_archived_relation(self):
-        self.relations_queryset.update(archived=True)
-        count = self.get_count()
-        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
-        response = self.client.delete(url)
-
-        assert response.status_code == status.HTTP_204_NO_CONTENT, response.json()
-        assert self.get_count() == count
-        assert self.get_instance(self.instance_with_relation.id).archived
