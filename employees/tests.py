@@ -17,11 +17,11 @@ from purchases.models import PurchaseProcedure
 
 
 class TestEmployeeService(TestCase,
-                             BaseCreateTestMixin,
-                             BaseUpdateTestMixin,
-                             BaseDestroyTestMixin,
-                             BaseDestroyWithArchivedRelationsTestMixin,
-                             BaseDestroyWithUnarchivedRelationsTestMixin):
+                          BaseCreateTestMixin,
+                          BaseUpdateTestMixin,
+                          BaseDestroyTestMixin,
+                          BaseDestroyWithArchivedRelationsTestMixin,
+                          BaseDestroyWithUnarchivedRelationsTestMixin):
     model = Employee
     service = EmployeeService
 
