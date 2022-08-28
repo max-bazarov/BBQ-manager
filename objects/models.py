@@ -11,6 +11,7 @@ class Company(models.Model):
     def __str__(self) -> str:
         return self.name
 
+
 class Object(models.Model):
 
     class Meta:
