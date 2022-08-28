@@ -20,7 +20,7 @@ class MaterialCreateListViewSet(ListCreateAPIView):
         return Material.objects.filter(object=obj_id)
 
     def perform_create(self, serializer):
-        serializer.save(object=self.kwargs['obj_id'])
+        serializer.save(object_id=self.kwargs['object_id'])
 
 
 class MaterialViewSet(ModelViewSet,

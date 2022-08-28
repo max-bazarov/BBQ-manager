@@ -9,5 +9,5 @@ router.register('materials', MaterialViewSet, 'material')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('object/<int:object_id>/materials/', MaterialCreateListViewSet.as_view())
+    path('object/<int:object_id>/materials/', MaterialCreateListViewSet.as_view(), name='object-material')
 ]
