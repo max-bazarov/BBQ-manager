@@ -95,7 +95,7 @@ class BaseDestroyWithArchivedRelationsTestMixin(BaseTest):
         assert self.get_instance(self.instance_with_relation.id).archived
 
 
-class BaseViewTest:
+class BaseViewTest(BaseTestsUtilMixin):
     '''
     Class for defining base attrs of Base View tests.
     '''
@@ -245,7 +245,8 @@ class BaseDestroyViewTest(BaseViewTest):
 class BaseCRUDViewTest(BaseCreateViewTest,
                        BaseRetrieveViewTest,
                        BaseListViewTest,
-                       BaseUpdateViewTest):
+                       BaseUpdateViewTest,
+                       BaseDestroyViewTest):
     '''
     This test is a combination of all base crud tests.
 
@@ -326,3 +327,71 @@ class BaseCRUDArchiveViewTest(BaseCreateViewTest,
     basename: str
     '''
     pass
+
+
+class DestroyInstancesWithRelationalDependenciesTestMixin(BaseTestsUtilMixin):
+    '''
+    This class is ment to test services which work with instances that are not permitted
+    to delete instanced, which have related objects.
+    '''
+    instance: Model
+    model: type[Model]
+    instance_with_relation: Model
+    destroy_service: type  # service class
+
+    def test_delete_without_relations(self):
+        count = self.get_count()
+        self.destroy_service(self.instance).destroy()
+
+        assert self.get_count() == count - 1, (
+            f'{self.destroy_service.__name__} does not destroy '
+            'instance without relations.'
+        )
+        assert not self.model.objects.filter(id=self.instance.id).exists(), (
+            f'{self.destroy_service.__name__} destroys '
+            'wrong instance'
+        )
+
+    def test_delete_with_relations(self):
+        count = self.get_count()
+
+        try:
+            self.destroy_service(self.instance_with_relation).destroy()
+        except Exception:
+            pass
+        else:
+            assert False, (
+                f'{self.destroy_service.__name__} does not raises when trying '
+                'to delete instance with relations'
+            )
+        assert count == self.get_count(), (
+            f'{self.destroy_service.__name__} destroys instance with existing relations.'
+        )
+
+
+class BaseDestroyWithUnarchivedRelationsViewTest(BaseViewTest):
+    instance_with_relation: Model
+
+    def test_delete_with_unarchived_relation_view(self):
+        count = self.get_count()
+        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
+        response = self.client.delete(url)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert self.get_count() == count
+        assert not self.get_instance(self.instance_with_relation.id).archived
+
+
+class BaseDestroyWithArchivedRelationsViewTest(BaseViewTest):
+    instance_with_relation: Model
+    relations_queryset: QuerySet
+
+    def test_delete_with_archived_relation_view(self):
+        self.relations_queryset.update(archived=True)
+        count = self.get_count()
+        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
+        response = self.client.delete(url)
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT, response.json()
+        assert self.get_count() == count
+        assert self.get_instance(self.instance_with_relation.id).archived
