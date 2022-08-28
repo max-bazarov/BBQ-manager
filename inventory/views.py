@@ -12,6 +12,7 @@ from .services import MaterialService
 class MaterialViewSet(ModelViewSet, ArchiveViewMixin):
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
+    service = MaterialService
 
     def update(self, request, *args, **kwargs):
         try:
