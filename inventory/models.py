@@ -26,6 +26,11 @@ class Material(models.Model):
         'is_archived',
         default=False
     )
+    object = models.ForeignKey(
+        'objects.Object',
+        on_delete=models.CASCADE,
+        related_name='materials'
+    )
 
     def __str__(self):
         return self.name

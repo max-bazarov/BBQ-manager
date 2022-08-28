@@ -1,1 +1,57 @@
-[{"model": "employees.employee", "pk": 1, "fields": {"first_name": "Max", "last_name": "Bazarov", "position": "team lead", "coefficient": 0.5}}, {"model": "employees.employee", "pk": 2, "fields": {"first_name": "Yakov", "last_name": "Varnaev", "position": "CTO", "coefficient": 0.8}}, {"model": "employees.employee", "pk": 3, "fields": {"first_name": "Aleksandr", "last_name": "Masnoy", "position": "trainee", "coefficient": 0.3}}, {"model": "employees.masterprocedure", "pk": 1, "fields": {"procedure": 1, "employee": 3, "price": "300.00", "coefficient": 0.3, "archived": false}}, {"model": "employees.masterprocedure", "pk": 2, "fields": {"procedure": 2, "employee": 1, "price": "800.00", "coefficient": 0.5, "archived": false}}, {"model": "employees.masterprocedure", "pk": 3, "fields": {"procedure": 3, "employee": 2, "price": "2000.00", "coefficient": 0.8, "archived": false}}]
+[
+{
+  "model": "employees.employee",
+  "pk": 1,
+  "fields": {
+    "first_name": "Yakov",
+    "last_name": "Varnaev",
+    "position": "CTO",
+    "coefficient": 0.5,
+    "archived": false
+  }
+},
+{
+  "model": "employees.employee",
+  "pk": 2,
+  "fields": {
+    "first_name": "Max",
+    "last_name": "Bazarov",
+    "position": "Backend Developer",
+    "coefficient": 0.1,
+    "archived": false
+  }
+},
+{
+  "model": "employees.employee",
+  "pk": 3,
+  "fields": {
+    "first_name": "Alexander",
+    "last_name": "Masnoy",
+    "position": "Backend Developer",
+    "coefficient": 0.1,
+    "archived": false
+  }
+},
+{
+  "model": "employees.masterprocedure",
+  "pk": 1,
+  "fields": {
+    "procedure": 1,
+    "employee": 1,
+    "price": "1100.00",
+    "coefficient": 0.5,
+    "archived": false
+  }
+},
+{
+  "model": "employees.masterprocedure",
+  "pk": 2,
+  "fields": {
+    "procedure": 3,
+    "employee": 2,
+    "price": "1200.00",
+    "coefficient": 0.6,
+    "archived": false
+  }
+}
+]

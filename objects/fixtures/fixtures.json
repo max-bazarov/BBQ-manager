@@ -1,0 +1,35 @@
+[
+{
+  "model": "objects.company",
+  "pk": 1,
+  "fields": {
+    "name": "BarBer&Q"
+  }
+},
+{
+  "model": "objects.object",
+  "pk": 1,
+  "fields": {
+    "company": 1,
+    "address": "Somewhere 21"
+  }
+},
+{
+  "model": "objects.department",
+  "pk": 1,
+  "fields": {
+    "name": "Male",
+    "parent": null,
+    "object": 1
+  }
+},
+{
+  "model": "objects.department",
+  "pk": 2,
+  "fields": {
+    "name": "Female",
+    "parent": 1,
+    "object": 1
+  }
+}
+]

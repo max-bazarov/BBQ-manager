@@ -6,7 +6,7 @@ SECRET_KEY = 'django-insecure-!987srvg*xu6ole*hv6%93%ck42dn67yl)g6-*p%vz+sfu3@u^
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 AUTH_USER_MODEL = 'users.User'
@@ -25,6 +25,7 @@ INSTALLED_APPS = [
 
     'core',
     'users',
+    'objects',
     'inventory',
     'employees',
     'procedures',
@@ -34,6 +35,9 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
 }
+
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'bbq_manager.yasg.CustomAutoSchema'}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
