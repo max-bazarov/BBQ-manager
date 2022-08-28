@@ -4,7 +4,7 @@ from .models import Procedure
 from .serializers import ProcedureSerializer
 
 
-class ProcedureNewService(BaseService):
+class ProcedureService(BaseService):
     model = Procedure
     serializer_class = ProcedureSerializer
     related_name = 'employees'
