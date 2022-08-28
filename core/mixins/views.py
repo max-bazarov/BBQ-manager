@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core.services import ArchiveService
+from core.services import BaseService
 
 
 class ArchiveViewMixin:
@@ -14,5 +14,5 @@ class ArchiveViewMixin:
     @action(detail=True, url_name='archive', methods=['put', 'patch'])
     def archive(self, request, *args, **kwargs):
         instance = self.get_object()
-        id = ArchiveService(instance).archive()
+        id = BaseService(instance, data=request.data, **kwargs).archive()
         return Response({'id': id}, status=status.HTTP_200_OK)
