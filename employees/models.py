@@ -39,4 +39,4 @@ class MasterProcedure(models.Model):
     archived = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.procedure.name
+        return f'{self.procedure} by {self.employee}'

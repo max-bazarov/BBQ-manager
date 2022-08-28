@@ -8,6 +8,11 @@ class Procedure(models.Model):
 
     name = models.CharField('Procedure_name', max_length=255)
     archived = models.BooleanField(default=False)
+    department = models.ForeignKey(
+        'objects.Department',
+        on_delete=models.CASCADE,
+        related_name='procedures'
+    )
 
     def __str__(self) -> str:
-        return self.name
+        return f'{self.name} at {self.department}'
