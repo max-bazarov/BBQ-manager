@@ -16,7 +16,7 @@ class EmployeeViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         try:
             id = NewEmployeeService(self.get_object()).destroy()
-            return Response({'id': id}, status.HTTP_200_OK)
+            return Response({'id': id}, status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 

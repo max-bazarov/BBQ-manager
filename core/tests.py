@@ -350,7 +350,8 @@ class BaseDestroyViewTest(BaseViewTest):
 class BaseCRUDViewTest(BaseCreateViewTest,
                        BaseRetrieveViewTest,
                        BaseListViewTest,
-                       BaseUpdateViewTest):
+                       BaseUpdateViewTest,
+                       BaseDestroyViewTest):
     '''
     This test is a combination of all base crud tests.
 
