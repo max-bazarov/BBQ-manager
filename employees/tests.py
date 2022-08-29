@@ -1,5 +1,6 @@
 import pytest
 from django.test import TestCase
+from django.urls import reverse
 from mixer.backend.django import mixer
 from rest_framework.test import APITestCase
 
@@ -7,10 +8,11 @@ from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
                         NewBaseDestroyTestMixin,
                         NewBaseDestroyWithArchivedRelationsTestMixin,
                         NewBaseDestroyWithUnarchivedRelationsTestMixin,
-                        NewBaseUpdateTestMixin)
+                        NewBaseUpdateTestMixin, BaseCreateNestedViewTest)
 from employees.models import Employee, MasterProcedure
 from employees.serializers import EmployeeSerializer
 from employees.services import MasterProcedureService, NewEmployeeService
+from objects.models import Object
 from procedures.models import Procedure
 from purchases.models import PurchaseProcedure
 
@@ -27,11 +29,13 @@ class TestNewEmployeeService(TestCase,
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        cls.instance = mixer.blend(cls.model)
         cls.data = {
             'first_name': 'Yakov',
             'last_name': 'Yakov',
             'position': 'CTO',
-            'coefficient': '0.82'
+            'coefficient': '0.82',
+            'object': cls.instance.object.id
         }
         cls.invalid_data = {
             'last_name': 52
@@ -39,14 +43,13 @@ class TestNewEmployeeService(TestCase,
         cls.update_data = {
             'position': 'Senior Backend Developer'
         }
-        cls.instance = mixer.blend(cls.model)
         cls.instance_with_relation = mixer.blend(cls.model)
         mixer.blend(MasterProcedure, employee=cls.instance_with_relation)
         cls.relations_queryset = cls.instance_with_relation.procedures.all()
 
 
 @pytest.mark.django_db
-class TestEmployeeViews(APITestCase, BaseCRUDViewTest):
+class TestEmployeeViews(APITestCase, BaseCreateNestedViewTest, BaseCRUDViewTest):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -54,17 +57,21 @@ class TestEmployeeViews(APITestCase, BaseCRUDViewTest):
         cls.basename = 'employee'
         cls.model = Employee
         cls.serializer = EmployeeSerializer
+        cls.object = mixer.blend(Object)
         cls.data = {
             'first_name': 'Yakovv',
             'last_name': 'Varnaevv',
             'position': 'junior developer',
-            'coefficient': 0.5
+            'coefficient': 0.5,
+            'object': cls.object.id
         }
+        cls.nested_url = reverse('object-employee', args=[cls.object.id])
         cls.update_data = {
             'position': 'senior developer',
             'first_name': 'Yakovv',
             'last_name': 'Varnaevv',
-            'coefficient': 0.5
+            'coefficient': 0.5,
+            'object': cls.object.id
         }
         cls.instance = mixer.blend(Employee)
 
