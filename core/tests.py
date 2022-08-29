@@ -192,7 +192,7 @@ class BaseUpdateViewTest(BaseViewTest):
     def test_update(self):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
-        response = self.client.put(url, self.update_data)
+        response = self.client.put(url, self.update_data, format='json')
         instance = self.model.objects.get(id=self.instance.pk)
 
         assert response.status_code == status.HTTP_200_OK, str(response.json())
@@ -204,10 +204,10 @@ class BaseUpdateViewTest(BaseViewTest):
     def test_partial_update(self):
         count = self.model.objects.count()
         url = reverse(self.basename + '-detail', args=[self.instance.id])
-        response = self.client.patch(url, self.update_data)
+        response = self.client.patch(url, self.update_data, format='json')
         instance = self.model.objects.get(id=self.instance.pk)
 
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK, response.json()
         assert response.json() == self.serializer(instance).data
         assert count == self.model.objects.count()
 
@@ -274,6 +274,32 @@ class BaseArchiveViewTest(BaseViewTest):
     update_data: dict[str, Any]
     basename: str
     '''
+    update_data: dict[str, Any]
+
+    def test_update(self):
+        count = self.model.objects.count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.put(url, self.update_data, format='json')
+
+        assert response.status_code == status.HTTP_200_OK, str(response.data())
+        assert count + 1 == self.model.objects.count()
+        assert self.model.objects.filter(id=self.instance.id).exists()
+        assert self.model.objects.get(id=self.instance.id).archived
+        new_instance = self.model.objects.last()
+        assert not new_instance.archived
+        assert response.json() == self.serializer(new_instance).data
+
+    def test_partial_update(self):
+        count = self.model.objects.count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.patch(url, self.update_data, format='json')
+
+        assert response.status_code == status.HTTP_200_OK, str(response.json())
+        assert count + 1 == self.model.objects.count()
+        assert self.model.objects.filter(id=self.instance.id).exists()
+        assert self.model.objects.get(id=self.instance.id).archived
+        assert response.json() == self.serializer(self.model.objects.last()).data
+
     def test_archive(self):
         url = reverse(self.basename + '-archive', args=[self.instance.id])
         response = self.client.put(url)
@@ -341,6 +367,28 @@ class DestroyInstancesWithRelationalDependenciesTestMixin(BaseTestsUtilMixin):
         assert count == self.get_count(), (
             f'{self.destroy_service.__name__} destroys instance with existing relations.'
         )
+
+
+class BaseCreateNestedViewTest(BaseTestsUtilMixin):
+    nested_url: str
+
+    def test_create_view(self):
+        count = self.get_count()
+        response = self.client.post(self.nested_url, self.data)
+
+        assert response.status_code == status.HTTP_201_CREATED, response.json()
+        assert self.get_count() == count + 1
+
+
+class BaseListNestedViewTest(BaseTestsUtilMixin):
+    nested_url: str
+    nested_queryset: QuerySet
+
+    def test_list(self):
+        response = self.client.get(self.nested_url)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.json()) == self.nested_queryset.count()
 
 
 class BaseDestroyWithUnarchivedRelationsViewTest(BaseViewTest):

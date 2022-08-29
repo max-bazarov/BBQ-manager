@@ -5,11 +5,12 @@ from mixer.backend.django import mixer
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.tests import (BaseCRUDArchiveViewTest,
-                        BaseCreateTestMixin,
+from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
                         BaseDestroyTestMixin,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
-                        BaseUpdateTestMixin)
+                        BaseDestroyWithUnarchivedRelationsViewTest,
+                        BaseListNestedViewTest, BaseUpdateTestMixin)
+from objects.models import Object
 from purchases.models import UsedMaterial
 
 from .models import Material, MaterialUnits
@@ -36,6 +37,7 @@ class TestMaterialService(TestCase,
             'name': 'some material',
             'unit': MaterialUnits.GRAMMS.value,
             'price': '1.00',
+            'object': cls.instance.object.id
         }
         cls.invalid_data = {'price': 'test'}
         cls.update_data = {
@@ -44,27 +46,35 @@ class TestMaterialService(TestCase,
 
 
 @pytest.mark.django_db
-class TestMaterialViews(APITestCase, BaseCRUDArchiveViewTest):
+class TestMaterialView(APITestCase,
+                       BaseCreateNestedViewTest,
+                       BaseListNestedViewTest,
+                       BaseDestroyWithUnarchivedRelationsViewTest):
+    model = Material
+    basename = 'material'
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.basename = 'material'
         cls.serializer = MaterialSerializer
-        cls.model = Material
+        cls.object = mixer.blend(Object)
         cls.update_data = {
             'name': 'Hair Color 1',
             'price': '1.11',
-            'unit': MaterialUnits.GRAMMS.value
+            'unit': MaterialUnits.GRAMMS.value,
+            'object': cls.object.id
         }
-
+        cls.nested_url = reverse('object-material', args=[cls.object.id])
         cls.data = {
             'name': 'Hair Color',
             'price': 1.11,
-            'unit': MaterialUnits.GRAMMS.value
+            'unit': MaterialUnits.GRAMMS.value,
+            'object': cls.object.id
         }
         cls.instance = mixer.blend(Material)
         cls.instance_with_relation = mixer.blend(Material)
         mixer.blend(UsedMaterial, material=cls.instance_with_relation)
+        cls.nested_queryset = cls.object.materials.all()
 
     def test_destroy_view_with_relation(self):
         count = self.model.objects.count()

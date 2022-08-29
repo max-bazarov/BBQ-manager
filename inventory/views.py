@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -7,6 +8,23 @@ from inventory.models import Material
 from inventory.serializers import MaterialSerializer
 
 from .services import MaterialService
+
+
+class MaterialCreateListViewSet(ListCreateAPIView):
+    serializer_class = MaterialSerializer
+    swagger_tags = ['materials']
+
+    def get_queryset(self):
+        obj_id = self.kwargs['object_id']
+        return Material.objects.filter(object=obj_id)
+
+    def perform_create(self, serializer):
+        serializer.save(object_id=self.kwargs['object_id'])
+
+
+class MaterialViewSet(ModelViewSet,
+                      ArchiveViewMixin):
+    queryset = Material.objects.filter()
 
 
 class MaterialViewSet(ModelViewSet, ArchiveViewMixin):
