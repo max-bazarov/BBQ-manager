@@ -62,14 +62,28 @@ class BaseService:
         self.instance.save()
         return self.instance
 
+    def create(self) -> Model:
+        return self.model.objects.create(**self._validate_data())
+
     def update(self) -> Model:
+        is_changed = False
+        data = self._get_instance_data()
+        for k, v in self.data.items():
+            if v != data[k]:
+                is_changed = True
+                break
+        if not is_changed:
+            return self.instance
+        if self.has_related():
+            new_instance_data = self._get_instance_data()
+            new_instance_data.update(self.data)
+            new_instance = self.__class__(data=new_instance_data).create()
+            self.archive()
+            return new_instance
         for k, v in self._validate_data().items():
             setattr(self.instance, k, v)
         self.instance.save()
         return self.instance
-
-    def create(self) -> Model:
-        return self.model.objects.get_or_create(**self._validate_data())
 
     def destroy(self) -> int:
         print('destroy', self.instance, hasattr(self.model, 'archived'))

@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import pytest
 from django.test import TestCase
 from django.urls import reverse
@@ -9,7 +11,8 @@ from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
                         BaseDestroyTestMixin,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
                         BaseDestroyWithUnarchivedRelationsViewTest,
-                        BaseListNestedViewTest, BaseUpdateTestMixin)
+                        BaseListNestedViewTest, BaseUpdateTestMixin, BaseCRUDViewTest, BaseCRUDArchiveViewTest,
+                        BaseUpdateWithoutRelationsViewTest, BaseUpdateWithRelationsViewTest)
 from objects.models import Object
 from purchases.models import UsedMaterial
 
@@ -49,7 +52,9 @@ class TestMaterialService(TestCase,
 class TestMaterialView(APITestCase,
                        BaseCreateNestedViewTest,
                        BaseListNestedViewTest,
-                       BaseDestroyWithUnarchivedRelationsViewTest):
+                       BaseDestroyWithUnarchivedRelationsViewTest,
+                       BaseUpdateWithoutRelationsViewTest,
+                       BaseUpdateWithRelationsViewTest):
     model = Material
     basename = 'material'
 
@@ -60,7 +65,7 @@ class TestMaterialView(APITestCase,
         cls.object = mixer.blend(Object)
         cls.update_data = {
             'name': 'Hair Color 1',
-            'price': '1.11',
+            'price': Decimal('1.11'),
             'unit': MaterialUnits.GRAMMS.value,
             'object': cls.object.id
         }
