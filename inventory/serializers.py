@@ -5,5 +5,5 @@ from inventory.models import Material
 
 class MaterialSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('id', 'name', 'unit', 'price', 'archived')
+        fields = '__all__'
         model = Material

@@ -5,28 +5,30 @@ from mixer.backend.django import mixer
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.mixins.tests import BaseTestsUtilMixin
-from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
-                        NewBaseDestroyTestMixin,
-                        NewBaseDestroyWithArchivedRelationsTestMixin,
-                        NewBaseDestroyWithUnarchivedRelationsTestMixin,
-                        NewBaseUpdateTestMixin)
+from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
+                        BaseDestroyTestMixin,
+                        BaseDestroyWithArchivedRelationsTestMixin,
+                        BaseDestroyWithArchivedRelationsViewTest,
+                        BaseDestroyWithUnarchivedRelationsTestMixin,
+                        BaseDestroyWithUnarchivedRelationsViewTest,
+                        BaseUpdateTestMixin)
 from employees.models import MasterProcedure
+from objects.models import Department
 
 from .models import Procedure
 from .serializers import ProcedureSerializer
-from .services import ProcedureNewService
+from .services import ProcedureService
 
 
 @pytest.mark.django_db
 class TestProcedureService(TestCase,
-                           NewBaseCreateTestMixin,
-                           NewBaseUpdateTestMixin,
-                           NewBaseDestroyTestMixin,
-                           NewBaseDestroyWithArchivedRelationsTestMixin,
-                           NewBaseDestroyWithUnarchivedRelationsTestMixin):
+                           BaseCreateTestMixin,
+                           BaseUpdateTestMixin,
+                           BaseDestroyTestMixin,
+                           BaseDestroyWithArchivedRelationsTestMixin,
+                           BaseDestroyWithUnarchivedRelationsTestMixin):
     model = Procedure
-    service = ProcedureNewService
+    service = ProcedureService
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -36,7 +38,8 @@ class TestProcedureService(TestCase,
         mixer.blend(MasterProcedure, procedure=cls.instance_with_relation)
         cls.relations_queryset = cls.instance_with_relation.employees.all()
         cls.data = {
-            'name': 'new procedure'
+            'name': 'new procedure',
+            'department': cls.instance.department.id
         }
         cls.update_data = {
             'name': 'updated procedure'
@@ -45,7 +48,10 @@ class TestProcedureService(TestCase,
 
 
 @pytest.mark.django_db
-class TestProcedureViews(APITestCase, BaseCRUDViewTest, BaseTestsUtilMixin):
+class TestProcedureViews(APITestCase,
+                         BaseCRUDViewTest,
+                         BaseDestroyWithUnarchivedRelationsViewTest,
+                         BaseDestroyWithArchivedRelationsViewTest):
     model = Procedure
     serializer = ProcedureSerializer
     basename = 'procedure'
@@ -53,13 +59,16 @@ class TestProcedureViews(APITestCase, BaseCRUDViewTest, BaseTestsUtilMixin):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        cls.instance = mixer.blend(cls.model)
+        cls.department = mixer.blend(Department)
         cls.data = {
-            'name': 'test'
+            'name': 'test',
+            'department': cls.department.id
         }
         cls.update_data = {
-            'name': 'new test'
+            'name': 'new test',
+            'department': cls.department.id
         }
-        cls.instance = mixer.blend(cls.model)
         cls.instance_with_relation = mixer.blend(cls.model)
         mixer.blend(MasterProcedure, procedure=cls.instance_with_relation)
         cls.relations_queryset = cls.instance_with_relation.employees.all()
@@ -71,22 +80,3 @@ class TestProcedureViews(APITestCase, BaseCRUDViewTest, BaseTestsUtilMixin):
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert self.get_count() == count - 1
-
-    def test_delete_with_unarchived_relation(self):
-        count = self.get_count()
-        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
-        response = self.client.delete(url)
-
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert self.get_count() == count
-        assert not self.get_instance(self.instance_with_relation.id).archived
-
-    def test_delete_with_archived_relation(self):
-        self.relations_queryset.update(archived=True)
-        count = self.get_count()
-        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
-        response = self.client.delete(url)
-
-        assert response.status_code == status.HTTP_204_NO_CONTENT, response.json()
-        assert self.get_count() == count
-        assert self.get_instance(self.instance_with_relation.id).archived

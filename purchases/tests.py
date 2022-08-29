@@ -1,26 +1,21 @@
-from datetime import datetime
-from decimal import Decimal
-
 import pytest
 from django.test import TestCase
 from mixer.backend.django import mixer
 from rest_framework.test import APITestCase
 
-from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
-                        NewBaseDestroyTestMixin, NewBaseUpdateTestMixin)
-from employees.models import Employee, MasterProcedure
-from inventory.models import Material, MaterialUnits
-from procedures.models import Procedure
+from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
+                        BaseDestroyTestMixin, BaseUpdateTestMixin)
+from inventory.models import Material
 
-from .models import Purchase, PurchaseProcedure, UsedMaterial
+from .models import PurchaseProcedure, UsedMaterial
 from .serializers import UsedMaterialSerializer
 from .services import UsedMaterialService
 
 
 class TestUsedMaterialService(TestCase,
-                              NewBaseCreateTestMixin,
-                              NewBaseDestroyTestMixin,
-                              NewBaseUpdateTestMixin):
+                              BaseCreateTestMixin,
+                              BaseDestroyTestMixin,
+                              BaseUpdateTestMixin):
     model = UsedMaterial
     service = UsedMaterialService
 
@@ -49,33 +44,9 @@ class TestUsedMaterialViews(APITestCase, BaseCRUDViewTest):
         super().setUpClass()
         cls.serializer = UsedMaterialSerializer
         cls.model = UsedMaterial
-        cls.basename = 'uses'
-        cls.procedure_with_master = Procedure.objects.create(name='master procedure')
-        cls.employee = Employee.objects.create(
-            first_name='Max',
-            last_name='Bazarov',
-            position='Boss',
-            coefficient=1
-        )
-        cls.master_procedure = MasterProcedure.objects.create(
-            procedure=cls.procedure_with_master,
-            employee=cls.employee,
-            price=Decimal(1),
-            coefficient=0.5,
-        )
-        cls.purchase = Purchase.objects.create(
-            time=datetime.now(),
-            is_paid_by_card=False,
-        )
-        cls.purchase_procedure = PurchaseProcedure.objects.create(
-            purchase=cls.purchase,
-            procedure=cls.master_procedure
-        )
-        cls.material = Material.objects.create(
-            name='Hair Color',
-            price=Decimal('1.11'),
-            unit=MaterialUnits.GRAMMS.value
-        )
+        cls.basename = 'used-material'
+        cls.material = mixer.blend(Material)
+        cls.purchase_procedure = mixer.blend(PurchaseProcedure)
         cls.data = {
             'procedure': cls.purchase_procedure.id,
             'material': cls.material.id,
@@ -86,8 +57,4 @@ class TestUsedMaterialViews(APITestCase, BaseCRUDViewTest):
             'material': cls.material.id,
             'amount': 3
         }
-        cls.instance = UsedMaterial.objects.create(
-            procedure=cls.purchase_procedure,
-            material=cls.material,
-            amount=1
-        )
+        cls.instance = mixer.blend(UsedMaterial)
