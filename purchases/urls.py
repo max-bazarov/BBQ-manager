@@ -4,6 +4,6 @@ from .views import UsedMaterialViewSet
 
 router = DefaultRouter()
 
-router.register('used-materials', UsedMaterialViewSet, basename='uses')
+router.register('used-materials', UsedMaterialViewSet, basename='used-material')
 
 urlpatterns = router.urls
