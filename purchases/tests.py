@@ -1,20 +1,13 @@
-from datetime import datetime
-from decimal import Decimal
-
 import pytest
 from django.test import TestCase
 from mixer.backend.django import mixer
 from rest_framework.test import APITestCase
 
-from core.tests import (BaseCRUDViewTest,
-                        BaseCreateTestMixin,
-                        BaseDestroyTestMixin,
-                        BaseUpdateTestMixin)
-from employees.models import Employee, MasterProcedure
-from inventory.models import Material, MaterialUnits
-from procedures.models import Procedure
+from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
+                        BaseDestroyTestMixin, BaseUpdateTestMixin)
+from inventory.models import Material
 
-from .models import Purchase, PurchaseProcedure, UsedMaterial
+from .models import PurchaseProcedure, UsedMaterial
 from .serializers import UsedMaterialSerializer
 from .services import UsedMaterialService
 

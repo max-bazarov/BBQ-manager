@@ -1,7 +1,7 @@
 from rest_framework import status
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import ListCreateAPIView
 
 from core.mixins.views import ArchiveViewMixin
 from inventory.models import Material
@@ -25,6 +25,7 @@ class MaterialCreateListViewSet(ListCreateAPIView):
 class MaterialViewSet(ModelViewSet,
                       ArchiveViewMixin):
     queryset = Material.objects.filter()
+
 
 class MaterialViewSet(ModelViewSet, ArchiveViewMixin):
     queryset = Material.objects.all()

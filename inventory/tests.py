@@ -5,17 +5,16 @@ from mixer.backend.django import mixer
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.tests import (BaseCRUDArchiveViewTest,
-                        BaseCreateTestMixin,
-                        BaseDestroyTestMixin,
-                        BaseDestroyWithUnarchivedRelationsTestMixin,
-                        BaseUpdateTestMixin)
+from core.tests import (BaseCreateTestMixin,
+                        BaseDestroyTestMixin, BaseDestroyWithArchivedRelationsViewTest,
+                        BaseDestroyWithUnarchivedRelationsTestMixin, BaseDestroyWithUnarchivedRelationsViewTest, BaseListNestedViewTest,
+                        BaseUpdateTestMixin, BaseCreateNestedViewTest)
+from objects.models import Object
 from purchases.models import UsedMaterial
 
 from .models import Material, MaterialUnits
 from .serializers import MaterialSerializer
 from .services import MaterialService
-from objects.models import Object
 
 
 class TestMaterialService(TestCase,
@@ -46,13 +45,17 @@ class TestMaterialService(TestCase,
 
 
 @pytest.mark.django_db
-class TestMaterialView(APITestCase, BaseCreateNestedViewTest, BaseCRUDArchiveViewTest):
+class TestMaterialView(APITestCase,
+                       BaseCreateNestedViewTest,
+                       BaseListNestedViewTest,
+                       BaseDestroyWithUnarchivedRelationsViewTest):
+    model = Material
+    basename = 'material'
+    
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.basename = 'material'
         cls.serializer = MaterialSerializer
-        cls.model = Material
         cls.object = mixer.blend(Object)
         cls.update_data = {
             'name': 'Hair Color 1',
@@ -70,6 +73,7 @@ class TestMaterialView(APITestCase, BaseCreateNestedViewTest, BaseCRUDArchiveVie
         cls.instance = mixer.blend(Material)
         cls.instance_with_relation = mixer.blend(Material)
         mixer.blend(UsedMaterial, material=cls.instance_with_relation)
+        cls.nested_queryset = cls.object.materials.all()
 
     def test_destroy_view_with_relation(self):
         count = self.model.objects.count()

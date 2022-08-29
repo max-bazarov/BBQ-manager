@@ -369,7 +369,6 @@ class DestroyInstancesWithRelationalDependenciesTestMixin(BaseTestsUtilMixin):
         )
 
 
-
 class BaseCreateNestedViewTest(BaseTestsUtilMixin):
     nested_url: str
 
@@ -390,6 +389,7 @@ class BaseListNestedViewTest(BaseTestsUtilMixin):
 
         assert response.status_code == status.HTTP_200_OK
         assert len(response.json()) == self.nested_queryset.count()
+
 
 class BaseDestroyWithUnarchivedRelationsViewTest(BaseViewTest):
     instance_with_relation: Model

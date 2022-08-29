@@ -5,14 +5,13 @@ from mixer.backend.django import mixer
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.tests import (BaseCRUDViewTest,
-                        BaseCreateTestMixin,
+from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
                         BaseDestroyTestMixin,
                         BaseDestroyWithArchivedRelationsTestMixin,
+                        BaseDestroyWithArchivedRelationsViewTest,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
-                        BaseUpdateTestMixin,
                         BaseDestroyWithUnarchivedRelationsViewTest,
-                        BaseDestroyWithArchivedRelationsViewTest)
+                        BaseUpdateTestMixin)
 from employees.models import MasterProcedure
 from objects.models import Department
 

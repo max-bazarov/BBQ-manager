@@ -4,17 +4,17 @@ from django.urls import reverse
 from mixer.backend.django import mixer
 from rest_framework.test import APITestCase
 
-from core.tests import (BaseCRUDViewTest,
-                        BaseCreateTestMixin,
+from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
                         BaseDestroyTestMixin,
                         BaseDestroyWithArchivedRelationsTestMixin,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
-                        BaseUpdateTestMixin)
+                        BaseUpdateTestMixin, BaseCreateNestedViewTest)
 from employees.models import Employee, MasterProcedure
 from employees.serializers import EmployeeSerializer
-from employees.services import MasterProcedureService, EmployeeService
+from employees.services import EmployeeService, MasterProcedureService
 from procedures.models import Procedure
 from purchases.models import PurchaseProcedure
+from objects.models import Object
 
 
 class TestEmployeeService(TestCase,
