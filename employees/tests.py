@@ -4,27 +4,27 @@ from django.urls import reverse
 from mixer.backend.django import mixer
 from rest_framework.test import APITestCase
 
-from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
-                        NewBaseDestroyTestMixin,
-                        NewBaseDestroyWithArchivedRelationsTestMixin,
-                        NewBaseDestroyWithUnarchivedRelationsTestMixin,
-                        NewBaseUpdateTestMixin, BaseCreateNestedViewTest)
+from core.tests import (BaseCRUDViewTest,
+                        BaseCreateTestMixin,
+                        BaseDestroyTestMixin,
+                        BaseDestroyWithArchivedRelationsTestMixin,
+                        BaseDestroyWithUnarchivedRelationsTestMixin,
+                        BaseUpdateTestMixin)
 from employees.models import Employee, MasterProcedure
 from employees.serializers import EmployeeSerializer
-from employees.services import MasterProcedureService, NewEmployeeService
-from objects.models import Object
+from employees.services import MasterProcedureService, EmployeeService
 from procedures.models import Procedure
 from purchases.models import PurchaseProcedure
 
 
-class TestNewEmployeeService(TestCase,
-                             NewBaseCreateTestMixin,
-                             NewBaseUpdateTestMixin,
-                             NewBaseDestroyTestMixin,
-                             NewBaseDestroyWithArchivedRelationsTestMixin,
-                             NewBaseDestroyWithUnarchivedRelationsTestMixin):
+class TestEmployeeService(TestCase,
+                          BaseCreateTestMixin,
+                          BaseUpdateTestMixin,
+                          BaseDestroyTestMixin,
+                          BaseDestroyWithArchivedRelationsTestMixin,
+                          BaseDestroyWithUnarchivedRelationsTestMixin):
     model = Employee
-    service = NewEmployeeService
+    service = EmployeeService
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -77,9 +77,9 @@ class TestEmployeeViews(APITestCase, BaseCreateNestedViewTest, BaseCRUDViewTest)
 
 
 class TestMasterProcedureService(TestCase,
-                                 NewBaseCreateTestMixin,
-                                 NewBaseDestroyTestMixin,
-                                 NewBaseDestroyWithUnarchivedRelationsTestMixin):
+                                 BaseCreateTestMixin,
+                                 BaseDestroyTestMixin,
+                                 BaseDestroyWithUnarchivedRelationsTestMixin):
     model = MasterProcedure
     service = MasterProcedureService
 
