@@ -12,6 +12,7 @@ from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
                         NewBaseDestroyWithUnarchivedRelationsTestMixin,
                         NewBaseUpdateTestMixin)
 from employees.models import MasterProcedure
+from objects.models import Department
 
 from .models import Procedure
 from .serializers import ProcedureSerializer
@@ -36,7 +37,8 @@ class TestProcedureService(TestCase,
         mixer.blend(MasterProcedure, procedure=cls.instance_with_relation)
         cls.relations_queryset = cls.instance_with_relation.employees.all()
         cls.data = {
-            'name': 'new procedure'
+            'name': 'new procedure',
+            'department': cls.instance.department.id
         }
         cls.update_data = {
             'name': 'updated procedure'
@@ -53,13 +55,16 @@ class TestProcedureViews(APITestCase, BaseCRUDViewTest, BaseTestsUtilMixin):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        cls.instance = mixer.blend(cls.model)
+        cls.department = mixer.blend(Department)
         cls.data = {
-            'name': 'test'
+            'name': 'test',
+            'department': cls.department.id
         }
         cls.update_data = {
-            'name': 'new test'
+            'name': 'new test',
+            'department': cls.department.id
         }
-        cls.instance = mixer.blend(cls.model)
         cls.instance_with_relation = mixer.blend(cls.model)
         mixer.blend(MasterProcedure, procedure=cls.instance_with_relation)
         cls.relations_queryset = cls.instance_with_relation.employees.all()
