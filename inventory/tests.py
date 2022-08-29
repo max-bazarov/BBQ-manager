@@ -11,7 +11,7 @@ from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
                         BaseDestroyTestMixin,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
                         BaseDestroyWithUnarchivedRelationsViewTest,
-                        BaseListNestedViewTest, BaseUpdateTestMixin, BaseCRUDViewTest, BaseCRUDArchiveViewTest,
+                        BaseListNestedViewTest, BaseUpdateTestMixin,
                         BaseUpdateWithoutRelationsViewTest, BaseUpdateWithRelationsViewTest)
 from objects.models import Object
 from purchases.models import UsedMaterial

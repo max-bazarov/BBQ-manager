@@ -464,4 +464,3 @@ class BaseUpdateWithoutRelationsViewTest(BaseViewTest):
             if isinstance(value, Model):
                 value = value.id
             assert value == v
-
