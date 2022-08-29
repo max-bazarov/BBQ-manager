@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from employees.services import MasterProcedureService, NewEmployeeService
+from employees.services import MasterProcedureService, EmployeeService
 
 from .models import Employee, MasterProcedure
 from .serializers import (EmployeeSerializer, MasterProcedureListSerializer,
@@ -15,7 +15,7 @@ class EmployeeViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            id = NewEmployeeService(self.get_object()).destroy()
+            id = EmployeeService(self.get_object()).destroy()
             return Response({'id': id}, status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)

@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 import funcy
 from django.db.models import Model
@@ -6,39 +6,9 @@ from django.db.models.query import QuerySet
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.serializers import Serializer
-from service_objects.services import Service
 
 from core.mixins.tests import BaseTestsUtilMixin
-from core.services import ArchiveService, BaseService
-
-
-class BaseCreateServiceTest:
-    '''
-    Base Create Service Test is ment to test service classes, which are responsible for
-    creation operations. In order to use it you should inherit from django.test.TestCase
-    and use this class as a mixin.
-
-    Usage: inherit from django.test.TestCase and use this class as mixin.
-
-    Note: Works with services, which are inherited from service_objects.services.Service only.
-    '''
-
-    model: type[Model]
-    data: dict[str, Any]
-    create_service: type[Service]
-
-    def test_create(self):
-        count = self.model.objects.count()
-        instance = self.create_service.execute(self.data)
-
-        assert count + 1 == self.model.objects.count(), (
-            f'{self.create_service.__class__.__name__} does not create instance'
-        )
-        assert isinstance(instance, self.model), (
-            f'{self.create_service.__class__.__name__} create method does not return instance'
-        )
-        for k, v in self.data.items():
-            assert v == getattr(instance, k)
+from core.services import BaseService
 
 
 class BaseTest(BaseTestsUtilMixin):
@@ -46,7 +16,7 @@ class BaseTest(BaseTestsUtilMixin):
     service: type[BaseService]
 
 
-class NewBaseCreateTestMixin(BaseTest):
+class BaseCreateTestMixin(BaseTest):
     ''''''
     data: dict[str, Any]
     invalid_data: dict[str, Any]
@@ -69,7 +39,7 @@ class NewBaseCreateTestMixin(BaseTest):
         assert self.get_count() == count
 
 
-class NewBaseUpdateTestMixin(BaseTest):
+class BaseUpdateTestMixin(BaseTest):
     ''''''
     update_data: dict[str, Any]
 
@@ -85,7 +55,7 @@ class NewBaseUpdateTestMixin(BaseTest):
             assert v == getattr(instance, k)
 
 
-class NewBaseDestroyTestMixin(BaseTest):
+class BaseDestroyTestMixin(BaseTest):
 
     def test_destroy(self):
         count = self.get_count()
@@ -95,7 +65,7 @@ class NewBaseDestroyTestMixin(BaseTest):
         assert not self.is_instance_exists(id=self.instance.id)
 
 
-class NewBaseDestroyWithUnarchivedRelationsTestMixin(BaseTest):
+class BaseDestroyWithUnarchivedRelationsTestMixin(BaseTest):
     instance_with_relation: Model
     relations_queryset: QuerySet
 
@@ -112,7 +82,7 @@ class NewBaseDestroyWithUnarchivedRelationsTestMixin(BaseTest):
         assert not self.get_instance(self.instance_with_relation.id).archived
 
 
-class NewBaseDestroyWithArchivedRelationsTestMixin(BaseTest):
+class BaseDestroyWithArchivedRelationsTestMixin(BaseTest):
     instance_with_relation: Model
     relations_queryset: QuerySet
 
@@ -123,81 +93,6 @@ class NewBaseDestroyWithArchivedRelationsTestMixin(BaseTest):
 
         assert self.get_count() == count
         assert self.get_instance(self.instance_with_relation.id).archived
-
-
-class BaseDestroyServiceTest:
-    '''
-    Base Destroy Service Test is ment to test service classes, wher are responsible for
-    destroy operations.
-
-    Usage: inherit from django.test.TestCase and use this class as mixin.
-
-    Note: Works with services, which are inherited from service_objects.services.Service only.
-
-    '''
-
-    instance: Model
-    create_service: type[Service]
-
-    def test_destroy(self):
-        count = self.model.objects.count()
-        instance = self.model.objects.first()
-
-        self.destroy_service.execute({'id': instance.id})
-        assert count - 1 == self.model.objects.count(), ('fail')
-
-
-class BaseArchiveServiceTest:
-    '''
-    This class is ment to test archive services.
-
-    Usage: inherit from django.test.TestCase and use this class as mixin.
-
-    Note: Works with services, which are inherited from service_objects.services.Service only.
-    '''
-    serializer_class: Optional[type[Serializer]]
-    instance: Model
-    archive_service: ArchiveService
-
-    def test_archive(self):
-        count = self.model.objects.count()
-        archived_id = self.archive_service(self.instance).archive()
-
-        assert count == self.model.objects.count(), (
-            f'{self.archive_service.__class__.__name__} does not archive instance'
-        )
-        assert archived_id == self.instance.pk, (
-            f'{self.archive_service.__class__.__name__} archive method does not return instance id'
-        )
-
-    def test_update(self):
-        count = self.model.objects.count()
-        new_instance = self.archive_service(self.instance, serializer_class=self.serializer_class)\
-            .update(**self.update_data)
-        unchanged_fields = [
-            f.name for f in self.instance._meta.fields
-            if f.name not in self.update_data and f.name not in ['id', 'archived']
-        ]
-
-        are_same = all(
-            getattr(self.instance, f) == getattr(new_instance, f) for f in unchanged_fields
-        )
-        assert are_same, (
-            f'{self.archive_service.__class__.__name__} new instance data'
-            f' is not equal to old instance data'
-        )
-        assert count + 1 == self.model.objects.count(), (
-            f'{self.archive_service.__class__.__name__} does not create updated instance'
-        )
-        assert isinstance(new_instance, self.model), (
-            f'{self.archive_service.__class__.__name__} update method does not return new instance'
-        )
-        assert self.model.objects.first().archived is True, (
-            f'{self.archive_service.__class__.__name__} update method does not archive instance'
-        )
-        assert self.update_data['price'] == new_instance.price, (
-            f'{self.archive_service.__class__.__name__} update method does not update instance'
-        )
 
 
 class BaseViewTest(BaseTestsUtilMixin):
@@ -379,38 +274,12 @@ class BaseArchiveViewTest(BaseViewTest):
     update_data: dict[str, Any]
     basename: str
     '''
-    update_data: dict[str, Any]
-
-    def test_update(self):
-        count = self.model.objects.count()
-        url = reverse(self.basename + '-detail', args=[self.instance.id])
-        response = self.client.put(url, self.update_data, format='json')
-
-        assert response.status_code == status.HTTP_200_OK, str(response.data())
-        assert count + 1 == self.model.objects.count()
-        assert self.model.objects.filter(id=self.instance.id).exists()
-        assert self.model.objects.get(id=self.instance.id).archived
-        new_instance = self.model.objects.last()
-        assert not new_instance.archived
-        assert response.json() == self.serializer(new_instance).data
-
-    def test_partial_update(self):
-        count = self.model.objects.count()
-        url = reverse(self.basename + '-detail', args=[self.instance.id])
-        response = self.client.patch(url, self.update_data, format='json')
-
-        assert response.status_code == status.HTTP_200_OK, str(response.json())
-        assert count + 1 == self.model.objects.count()
-        assert self.model.objects.filter(id=self.instance.id).exists()
-        assert self.model.objects.get(id=self.instance.id).archived
-        assert response.json() == self.serializer(self.model.objects.last()).data
-
     def test_archive(self):
-        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        url = reverse(self.basename + '-archive', args=[self.instance.id])
         response = self.client.put(url)
 
         assert response.status_code == status.HTTP_200_OK
-        assert self.model.objects.get(id=self.instance.id).archived
+        assert self.get_instance(self.instance.id).archived
 
 
 class BaseCRUDArchiveViewTest(BaseCreateViewTest,

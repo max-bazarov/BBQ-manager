@@ -5,10 +5,11 @@ from mixer.backend.django import mixer
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.tests import (BaseCRUDArchiveViewTest, NewBaseCreateTestMixin,
-                        NewBaseDestroyTestMixin,
-                        NewBaseDestroyWithUnarchivedRelationsTestMixin,
-                        NewBaseUpdateTestMixin)
+from core.tests import (BaseCRUDArchiveViewTest,
+                        BaseCreateTestMixin,
+                        BaseDestroyTestMixin,
+                        BaseDestroyWithUnarchivedRelationsTestMixin,
+                        BaseUpdateTestMixin)
 from purchases.models import UsedMaterial
 
 from .models import Material, MaterialUnits
@@ -17,10 +18,10 @@ from .services import MaterialService
 
 
 class TestMaterialService(TestCase,
-                          NewBaseCreateTestMixin,
-                          NewBaseUpdateTestMixin,
-                          NewBaseDestroyTestMixin,
-                          NewBaseDestroyWithUnarchivedRelationsTestMixin):
+                          BaseCreateTestMixin,
+                          BaseUpdateTestMixin,
+                          BaseDestroyTestMixin,
+                          BaseDestroyWithUnarchivedRelationsTestMixin):
     model = Material
     service = MaterialService
 
@@ -43,7 +44,7 @@ class TestMaterialService(TestCase,
 
 
 @pytest.mark.django_db
-class TestMaterialView(APITestCase, BaseCRUDArchiveViewTest):
+class TestMaterialViews(APITestCase, BaseCRUDArchiveViewTest):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

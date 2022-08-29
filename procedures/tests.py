@@ -5,28 +5,30 @@ from mixer.backend.django import mixer
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from core.tests import (BaseCRUDViewTest, NewBaseCreateTestMixin,
-                        NewBaseDestroyTestMixin,
-                        NewBaseDestroyWithArchivedRelationsTestMixin,
-                        NewBaseDestroyWithUnarchivedRelationsTestMixin,
-                        NewBaseUpdateTestMixin, BaseDestroyWithUnarchivedRelationsViewTest,
+from core.tests import (BaseCRUDViewTest,
+                        BaseCreateTestMixin,
+                        BaseDestroyTestMixin,
+                        BaseDestroyWithArchivedRelationsTestMixin,
+                        BaseDestroyWithUnarchivedRelationsTestMixin,
+                        BaseUpdateTestMixin,
+                        BaseDestroyWithUnarchivedRelationsViewTest,
                         BaseDestroyWithArchivedRelationsViewTest)
 from employees.models import MasterProcedure
 
 from .models import Procedure
 from .serializers import ProcedureSerializer
-from .services import ProcedureNewService
+from .services import ProcedureService
 
 
 @pytest.mark.django_db
 class TestProcedureService(TestCase,
-                           NewBaseCreateTestMixin,
-                           NewBaseUpdateTestMixin,
-                           NewBaseDestroyTestMixin,
-                           NewBaseDestroyWithArchivedRelationsTestMixin,
-                           NewBaseDestroyWithUnarchivedRelationsTestMixin):
+                           BaseCreateTestMixin,
+                           BaseUpdateTestMixin,
+                           BaseDestroyTestMixin,
+                           BaseDestroyWithArchivedRelationsTestMixin,
+                           BaseDestroyWithUnarchivedRelationsTestMixin):
     model = Procedure
-    service = ProcedureNewService
+    service = ProcedureService
 
     @classmethod
     def setUpClass(cls) -> None:

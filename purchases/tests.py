@@ -7,9 +7,9 @@ from django.test import TestCase
 from rest_framework.test import APITestCase
 
 from core.tests import (BaseCRUDViewTest,
-                        NewBaseCreateTestMixin,
-                        NewBaseDestroyTestMixin,
-                        NewBaseUpdateTestMixin)
+                        BaseCreateTestMixin,
+                        BaseDestroyTestMixin,
+                        BaseUpdateTestMixin)
 from employees.models import Employee, MasterProcedure
 from inventory.models import Material, MaterialUnits
 from procedures.models import Procedure
@@ -20,9 +20,9 @@ from .services import UsedMaterialService
 
 
 class TestUsedMaterialService(TestCase,
-                              NewBaseCreateTestMixin,
-                              NewBaseDestroyTestMixin,
-                              NewBaseUpdateTestMixin):
+                              BaseCreateTestMixin,
+                              BaseDestroyTestMixin,
+                              BaseUpdateTestMixin):
     model = UsedMaterial
     service = UsedMaterialService
 
