@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 
 from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
                         BaseDestroyTestMixin, BaseUpdateTestMixin)
-from inventory.models import Material, ProductMaterial
+from inventory.models import ProductMaterial
 
 from .models import PurchaseProcedure, UsedMaterial
 from .serializers import UsedMaterialSerializer

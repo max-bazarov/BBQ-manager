@@ -15,9 +15,9 @@ from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
 from objects.models import Object
 from purchases.models import UsedMaterial
 
-from .models import Material, MaterialUnits, ProductMaterial
+from .models import Material, MaterialUnits, ProductMaterial, Stock
 from .serializers import MaterialSerializer
-from .services import MaterialService
+from .services import MaterialService, StockService, ProductMaterialService
 
 
 class TestMaterialService(TestCase,
@@ -88,3 +88,53 @@ class TestMaterialView(APITestCase,
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert count == self.model.objects.count()
+
+
+class TestStockService(TestCase,
+                       BaseCreateTestMixin,
+                       BaseDestroyTestMixin,
+                       BaseUpdateTestMixin):
+    model = Stock
+    service = StockService
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.instance = mixer.blend(cls.model)
+        cls.data = {
+            'price': '1.23',
+            'material': mixer.blend(Material).id
+        }
+        cls.update_data = {
+            'price': '2.28',
+            'material': mixer.blend(Material).id
+        }
+        cls.invalid_data = {
+            'material': 'hahahahha funny'
+        }
+
+
+class TestProductMaterialService(TestCase,
+                                 BaseCreateTestMixin,
+                                 BaseUpdateTestMixin,
+                                 BaseDestroyTestMixin,
+                                 BaseDestroyWithUnarchivedRelationsTestMixin):
+
+    model = ProductMaterial
+    service = ProductMaterialService
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.instance = mixer.blend(cls.model)
+        cls.instance_with_relation = mixer.blend(cls.model)
+        mixer.blend(UsedMaterial, material=cls.instance_with_relation)
+        cls.relations_queryset = cls.instance_with_relation.materials.all()
+        cls.data = {
+            'material': mixer.blend(Material).id,
+            'price': '1.23'
+        }
+        cls.invalid_data = {'material': 'test'}
+        cls.update_data = {
+            'price': '2.28'
+        }

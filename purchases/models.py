@@ -14,6 +14,7 @@ class Purchase(models.Model):
         through='PurchaseProcedure'
     )
 
+
 class PurchaseProcedure(models.Model):
 
     class Meta:

@@ -125,7 +125,6 @@ class TestMasterProcedureService(TestCase,
         cls.invalid_data = {'procedure': 'test'}
 
 
-
 @pytest.mark.django_db
 class TestMasterProcedureViews(APITestCase,
                                BaseCRUDViewTest,
@@ -159,4 +158,3 @@ class TestMasterProcedureViews(APITestCase,
             'price': '9990.00',
             'coefficient': '0.8'
         }
-
