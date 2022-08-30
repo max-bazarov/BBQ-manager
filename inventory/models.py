@@ -32,6 +32,10 @@ class Material(models.Model):
 
 
 class Stock(models.Model):
+
+    class Meta:
+        db_table = 'stocks'
+
     price = models.DecimalField(
         'material_price',
         max_digits=10,
@@ -46,6 +50,10 @@ class Stock(models.Model):
 
 
 class ProductMaterial(models.Model):
+
+    class Meta:
+        db_table = 'product_material'
+
     material = models.ForeignKey(
         Material,
         on_delete=models.PROTECT,
