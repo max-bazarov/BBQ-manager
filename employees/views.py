@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from employees.services import EmployeeService, MasterProcedureService
 
 from .models import Employee, MasterProcedure
-from .serializers import (EmployeeSerializer,
+from .serializers import (EmployeeSerializer, MasterProcedureListSerializer,
                           MasterProcedureSerializer)
 
 
@@ -44,7 +44,11 @@ class EmployeeViewSet(ModelViewSet):
 
 class MasterProcedureViewSet(ModelViewSet):
     queryset = MasterProcedure.objects.all()
-    serializer_class = MasterProcedureSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return MasterProcedureListSerializer
+        return MasterProcedureSerializer
 
     def update(self, request, *args, **kwargs):
         try:

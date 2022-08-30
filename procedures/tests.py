@@ -9,11 +9,9 @@ from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
                         BaseDestroyWithArchivedRelationsViewTest,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
                         BaseDestroyWithUnarchivedRelationsViewTest,
-                        BaseUpdateTestMixin,
+                        BaseUpdateDoNothingViewTest, BaseUpdateTestMixin,
                         BaseUpdateWithoutRelationsViewTest,
-                        BaseUpdateWithRelationsViewTest,
-                        BaseUpdateDoNothingViewTest)
-
+                        BaseUpdateWithRelationsViewTest)
 from employees.models import MasterProcedure
 from objects.models import Department
 

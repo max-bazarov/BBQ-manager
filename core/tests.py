@@ -104,6 +104,7 @@ class BaseViewTest(BaseTestsUtilMixin):
     instance: Model
     data: dict[str, str]
     basename: str
+    serializers: dict[str, type[Serializer]] = dict()
 
     def check_update_data_same_fields_as_instance(self, instance):
         for k, v in self.update_data.items():
@@ -174,11 +175,12 @@ class BaseListViewTest(BaseViewTest):
     basename: str
     '''
     def test_list_view(self):
+        serializer = self.serializers.get('list', self.serializer)
         url = reverse(self.basename + '-list')
         response = self.client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == self.serializer(self.model.objects.all(), many=True).data
+        assert response.json() == serializer(self.model.objects.all(), many=True).data
 
 
 class BaseUpdateViewTest(BaseViewTest):

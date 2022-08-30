@@ -7,16 +7,17 @@ from rest_framework.test import APITestCase
 from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
                         BaseCRUDViewTest, BaseDestroyTestMixin,
                         BaseDestroyWithArchivedRelationsTestMixin,
+                        BaseDestroyWithArchivedRelationsViewTest,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
+                        BaseDestroyWithUnarchivedRelationsViewTest,
+                        BaseListNestedViewTest, BaseUpdateDoNothingViewTest,
                         BaseUpdateTestMixin,
                         BaseUpdateWithoutRelationsViewTest,
-                        BaseUpdateWithRelationsViewTest,
-                        BaseUpdateDoNothingViewTest,
-                        BaseDestroyWithUnarchivedRelationsViewTest,
-                        BaseDestroyWithArchivedRelationsViewTest,
-                        BaseListNestedViewTest)
+                        BaseUpdateWithRelationsViewTest)
 from employees.models import Employee, MasterProcedure
-from employees.serializers import EmployeeSerializer, MasterProcedureSerializer
+from employees.serializers import (EmployeeSerializer,
+                                   MasterProcedureListSerializer,
+                                   MasterProcedureSerializer)
 from employees.services import EmployeeService, MasterProcedureService
 from objects.models import Object
 from procedures.models import Procedure
@@ -139,6 +140,7 @@ class TestMasterProcedureViews(APITestCase,
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        cls.serializers = {'list': MasterProcedureListSerializer}
         cls.basename = 'master-procedure'
         cls.model = MasterProcedure
         cls.serializer = MasterProcedureSerializer

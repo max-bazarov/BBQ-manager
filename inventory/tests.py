@@ -8,9 +8,10 @@ from rest_framework.test import APITestCase
 from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
                         BaseDestroyTestMixin,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
-                        BaseListNestedViewTest, BaseUpdateTestMixin,
-                        BaseUpdateWithoutRelationsViewTest, BaseUpdateWithRelationsViewTest,
-                        BaseUpdateDoNothingViewTest)
+                        BaseListNestedViewTest, BaseUpdateDoNothingViewTest,
+                        BaseUpdateTestMixin,
+                        BaseUpdateWithoutRelationsViewTest,
+                        BaseUpdateWithRelationsViewTest)
 from objects.models import Object
 from purchases.models import UsedMaterial
 
