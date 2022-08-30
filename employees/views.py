@@ -26,10 +26,18 @@ class EmployeeViewSet(ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
 
+    def update(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            updated_instance = EmployeeService(instance, data=request.data, **kwargs).update()
+            return Response(EmployeeSerializer(updated_instance).data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
     def destroy(self, request, *args, **kwargs):
         try:
-            id = EmployeeService(self.get_object()).destroy()
-            return Response({'id': id}, status.HTTP_204_NO_CONTENT)
+            EmployeeService(self.get_object()).destroy()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
@@ -42,9 +50,19 @@ class MasterProcedureViewSet(ModelViewSet):
             return MasterProcedureListSerializer
         return MasterProcedureSerializer
 
+    def update(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            updated_instance = MasterProcedureService(instance,
+                                                      data=request.data, **kwargs).update()
+            return Response(MasterProcedureSerializer(updated_instance).data,
+                            status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
     def destroy(self, request, *args, **kwargs):
         try:
-            id = MasterProcedureService(self.get_object()).destroy()
-            return Response({'id': id}, status.HTTP_200_OK)
+            MasterProcedureService(self.get_object()).destroy()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)

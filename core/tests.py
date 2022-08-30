@@ -104,6 +104,14 @@ class BaseViewTest(BaseTestsUtilMixin):
     instance: Model
     data: dict[str, str]
     basename: str
+    serializers: dict[str, type[Serializer]] = dict()
+
+    def check_update_data_same_fields_as_instance(self, instance):
+        for k, v in self.update_data.items():
+            value = getattr(instance, k)
+            if isinstance(value, Model):
+                value = value.id
+            assert str(value) == str(v)
 
 
 class BaseCreateViewTest(BaseViewTest):
@@ -167,11 +175,12 @@ class BaseListViewTest(BaseViewTest):
     basename: str
     '''
     def test_list_view(self):
+        serializer = self.serializers.get('list', self.serializer)
         url = reverse(self.basename + '-list')
         response = self.client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.json() == self.serializer(self.model.objects.all(), many=True).data
+        assert response.json() == serializer(self.model.objects.all(), many=True).data
 
 
 class BaseUpdateViewTest(BaseViewTest):
@@ -212,13 +221,6 @@ class BaseUpdateViewTest(BaseViewTest):
         assert count == self.model.objects.count()
 
         self.check_update_data_same_fields_as_instance(instance)
-
-    def check_update_data_same_fields_as_instance(self, instance):
-        for k, v in self.update_data.items():
-            value = getattr(instance, k)
-            if isinstance(value, Model):
-                value = value.id
-            assert value == v
 
 
 class BaseDestroyViewTest(BaseViewTest):
@@ -417,3 +419,86 @@ class BaseDestroyWithArchivedRelationsViewTest(BaseViewTest):
         assert response.status_code == status.HTTP_204_NO_CONTENT, response.json()
         assert self.get_count() == count
         assert self.get_instance(self.instance_with_relation.id).archived
+
+
+class BaseUpdateWithRelationsViewTest(BaseViewTest):
+    instance_with_relation: Model
+
+    def test_update_with_relation_view(self):
+        count = self.get_count()
+        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
+        response = self.client.put(url, self.update_data, format='json')
+
+        assert response.status_code == status.HTTP_200_OK, str(response.data())
+        assert count + 1 == self.get_count()
+        assert self.model.objects.filter(id=self.instance_with_relation.id).exists()
+        assert self.model.objects.get(id=self.instance_with_relation.id).archived
+        new_instance = self.model.objects.last()
+        assert not new_instance.archived
+        assert response.json() == self.serializer(new_instance).data
+        self.check_update_data_same_fields_as_instance(new_instance)
+
+    def test_partial_update_with_relation_view(self):
+        count = self.get_count()
+        url = reverse(self.basename + '-detail', args=[self.instance_with_relation.id])
+        response = self.client.put(url, self.update_data, format='json')
+
+        assert response.status_code == status.HTTP_200_OK, str(response.data())
+        assert count + 1 == self.get_count()
+        assert self.model.objects.filter(id=self.instance_with_relation.id).exists()
+        assert self.model.objects.get(id=self.instance_with_relation.id).archived
+        new_instance = self.model.objects.last()
+        assert not new_instance.archived
+        assert response.json() == self.serializer(new_instance).data
+        self.check_update_data_same_fields_as_instance(new_instance)
+
+
+class BaseUpdateWithoutRelationsViewTest(BaseViewTest):
+    instance_with_relation: Model
+
+    def test_update_without_relation_view(self):
+        count = self.get_count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.put(url, self.update_data, format='json')
+        instance = self.model.objects.get(id=self.instance.pk)
+
+        assert response.status_code == status.HTTP_200_OK, str(response.data())
+        assert count == self.get_count()
+        assert self.model.objects.filter(id=self.instance.id).exists()
+        self.check_update_data_same_fields_as_instance(instance)
+
+    def test_partial_update_without_relation_view(self):
+        count = self.get_count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.patch(url, self.update_data, format='json')
+        instance = self.model.objects.get(id=self.instance.pk)
+
+        assert response.status_code == status.HTTP_200_OK, str(response.data())
+        assert count == self.get_count()
+        assert self.model.objects.filter(id=self.instance.id).exists()
+        self.check_update_data_same_fields_as_instance(instance)
+
+
+class BaseUpdateDoNothingViewTest(BaseViewTest):
+
+    instance_data: dict[str, Any]
+
+    def test_update_do_nothing(self):
+        count = self.get_count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.put(url, self.instance_data, format='json')
+
+        assert response.status_code == status.HTTP_200_OK, str(response.data())
+        assert count == self.get_count()
+        assert self.model.objects.filter(id=self.instance.id).exists()
+        assert not self.get_instance(self.instance.id).archived
+
+    def test_partial_update_do_nothing(self):
+        count = self.get_count()
+        url = reverse(self.basename + '-detail', args=[self.instance.id])
+        response = self.client.patch(url, self.instance_data, format='json')
+
+        assert response.status_code == status.HTTP_200_OK, str(response.data())
+        assert count == self.get_count()
+        assert self.model.objects.filter(id=self.instance.id).exists()
+        assert not self.get_instance(self.instance.id).archived

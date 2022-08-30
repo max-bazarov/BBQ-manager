@@ -1,8 +1,6 @@
 import pytest
 from django.test import TestCase
-from django.urls import reverse
 from mixer.backend.django import mixer
-from rest_framework import status
 from rest_framework.test import APITestCase
 
 from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
@@ -11,7 +9,9 @@ from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
                         BaseDestroyWithArchivedRelationsViewTest,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
                         BaseDestroyWithUnarchivedRelationsViewTest,
-                        BaseUpdateTestMixin)
+                        BaseUpdateDoNothingViewTest, BaseUpdateTestMixin,
+                        BaseUpdateWithoutRelationsViewTest,
+                        BaseUpdateWithRelationsViewTest)
 from employees.models import MasterProcedure
 from objects.models import Department
 
@@ -51,7 +51,10 @@ class TestProcedureService(TestCase,
 class TestProcedureViews(APITestCase,
                          BaseCRUDViewTest,
                          BaseDestroyWithUnarchivedRelationsViewTest,
-                         BaseDestroyWithArchivedRelationsViewTest):
+                         BaseDestroyWithArchivedRelationsViewTest,
+                         BaseUpdateWithoutRelationsViewTest,
+                         BaseUpdateWithRelationsViewTest,
+                         BaseUpdateDoNothingViewTest):
     model = Procedure
     serializer = ProcedureSerializer
     basename = 'procedure'
@@ -60,6 +63,9 @@ class TestProcedureViews(APITestCase,
     def setUpClass(cls) -> None:
         super().setUpClass()
         cls.instance = mixer.blend(cls.model)
+        cls.instance_data = {
+            'name': cls.instance.name
+        }
         cls.department = mixer.blend(Department)
         cls.data = {
             'name': 'test',
@@ -72,11 +78,3 @@ class TestProcedureViews(APITestCase,
         cls.instance_with_relation = mixer.blend(cls.model)
         mixer.blend(MasterProcedure, procedure=cls.instance_with_relation)
         cls.relations_queryset = cls.instance_with_relation.employees.all()
-
-    def test_delete_without_relation(self):
-        count = self.get_count()
-        url = reverse('procedure-detail', args=[self.instance.id])
-        response = self.client.delete(url)
-
-        assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert self.get_count() == count - 1

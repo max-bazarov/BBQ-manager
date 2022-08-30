@@ -7,7 +7,8 @@
     "last_name": "Varnaev",
     "position": "CTO",
     "coefficient": 0.5,
-    "archived": false
+    "archived": false,
+    "object": 1
   }
 },
 {
@@ -18,7 +19,8 @@
     "last_name": "Bazarov",
     "position": "Backend Developer",
     "coefficient": 0.1,
-    "archived": false
+    "archived": false,
+    "object": 1
   }
 },
 {
@@ -29,7 +31,8 @@
     "last_name": "Masnoy",
     "position": "Backend Developer",
     "coefficient": 0.1,
-    "archived": false
+    "archived": false,
+    "object": 1
   }
 },
 {
