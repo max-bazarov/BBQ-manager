@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 import pytest
 from django.test import TestCase
 from django.urls import reverse
@@ -10,9 +8,9 @@ from rest_framework.test import APITestCase
 from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
                         BaseDestroyTestMixin,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
-                        BaseDestroyWithUnarchivedRelationsViewTest,
                         BaseListNestedViewTest, BaseUpdateTestMixin,
-                        BaseUpdateWithoutRelationsViewTest, BaseUpdateWithRelationsViewTest)
+                        BaseUpdateWithoutRelationsViewTest, BaseUpdateWithRelationsViewTest,
+                        BaseUpdateDoNothingViewTest)
 from objects.models import Object
 from purchases.models import UsedMaterial
 
@@ -52,9 +50,9 @@ class TestMaterialService(TestCase,
 class TestMaterialView(APITestCase,
                        BaseCreateNestedViewTest,
                        BaseListNestedViewTest,
-                       BaseDestroyWithUnarchivedRelationsViewTest,
                        BaseUpdateWithoutRelationsViewTest,
-                       BaseUpdateWithRelationsViewTest):
+                       BaseUpdateWithRelationsViewTest,
+                       BaseUpdateDoNothingViewTest):
     model = Material
     basename = 'material'
 
@@ -63,20 +61,24 @@ class TestMaterialView(APITestCase,
         super().setUpClass()
         cls.serializer = MaterialSerializer
         cls.object = mixer.blend(Object)
+
         cls.update_data = {
             'name': 'Hair Color 1',
-            'price': Decimal('1.11'),
+            'price': '1.11',
             'unit': MaterialUnits.GRAMMS.value,
             'object': cls.object.id
         }
         cls.nested_url = reverse('object-material', args=[cls.object.id])
         cls.data = {
             'name': 'Hair Color',
-            'price': 1.11,
+            'price': '1.11',
             'unit': MaterialUnits.GRAMMS.value,
             'object': cls.object.id
         }
         cls.instance = mixer.blend(Material)
+        cls.instance_data = {
+            'name': cls.instance.name
+        }
         cls.instance_with_relation = mixer.blend(Material)
         mixer.blend(UsedMaterial, material=cls.instance_with_relation)
         cls.nested_queryset = cls.object.materials.all()

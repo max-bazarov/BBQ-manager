@@ -8,9 +8,15 @@ from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
                         BaseCRUDViewTest, BaseDestroyTestMixin,
                         BaseDestroyWithArchivedRelationsTestMixin,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
-                        BaseUpdateTestMixin)
+                        BaseUpdateTestMixin,
+                        BaseUpdateWithoutRelationsViewTest,
+                        BaseUpdateWithRelationsViewTest,
+                        BaseUpdateDoNothingViewTest,
+                        BaseDestroyWithUnarchivedRelationsViewTest,
+                        BaseDestroyWithArchivedRelationsViewTest,
+                        BaseListNestedViewTest)
 from employees.models import Employee, MasterProcedure
-from employees.serializers import EmployeeSerializer
+from employees.serializers import EmployeeSerializer, MasterProcedureSerializer
 from employees.services import EmployeeService, MasterProcedureService
 from objects.models import Object
 from procedures.models import Procedure
@@ -29,6 +35,7 @@ class TestEmployeeService(TestCase,
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        cls.model = Employee
         cls.instance = mixer.blend(cls.model)
         cls.data = {
             'first_name': 'Yakov',
@@ -49,7 +56,14 @@ class TestEmployeeService(TestCase,
 
 
 @pytest.mark.django_db
-class TestEmployeeViews(APITestCase, BaseCreateNestedViewTest, BaseCRUDViewTest):
+class TestEmployeeViews(APITestCase,
+                        BaseCreateNestedViewTest,
+                        BaseListNestedViewTest,
+                        BaseDestroyWithUnarchivedRelationsViewTest,
+                        BaseDestroyWithArchivedRelationsViewTest,
+                        BaseUpdateWithoutRelationsViewTest,
+                        BaseUpdateWithRelationsViewTest,
+                        BaseUpdateDoNothingViewTest):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -58,6 +72,10 @@ class TestEmployeeViews(APITestCase, BaseCreateNestedViewTest, BaseCRUDViewTest)
         cls.model = Employee
         cls.serializer = EmployeeSerializer
         cls.object = mixer.blend(Object)
+        cls.instance = mixer.blend(cls.model)
+        cls.instance_data = {
+            'first_name': cls.instance.first_name
+        }
         cls.data = {
             'first_name': 'Yakovv',
             'last_name': 'Varnaevv',
@@ -73,19 +91,24 @@ class TestEmployeeViews(APITestCase, BaseCreateNestedViewTest, BaseCRUDViewTest)
             'coefficient': 0.5,
             'object': cls.object.id
         }
-        cls.instance = mixer.blend(Employee)
+        cls.instance_with_relation = mixer.blend(cls.model)
+        mixer.blend(MasterProcedure, employee=cls.instance_with_relation)
+        cls.relations_queryset = cls.instance_with_relation.procedures.all()
+        cls.nested_queryset = cls.object.employees.all()
 
 
 class TestMasterProcedureService(TestCase,
                                  BaseCreateTestMixin,
+                                 BaseUpdateTestMixin,
                                  BaseDestroyTestMixin,
                                  BaseDestroyWithUnarchivedRelationsTestMixin):
-    model = MasterProcedure
+
     service = MasterProcedureService
 
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        cls.model = MasterProcedure
         cls.instance = mixer.blend(cls.model)
         cls.instance_with_relation = mixer.blend(cls.model)
         mixer.blend(PurchaseProcedure, procedure=cls.instance_with_relation)
@@ -95,5 +118,46 @@ class TestMasterProcedureService(TestCase,
             'price': '12000.00',
             'coefficient': 0.4
         }
+        cls.update_data = {
+            'employee': mixer.blend(Employee).id,
+            'procedure': mixer.blend(Procedure).id,
+            'price': '9990.00',
+            'coefficient': 0.8
+        }
         cls.invalid_data = {'procedure': 'test'}
+        cls.relations_queryset = cls.instance_with_relation.purchases.all()
+
+
+@pytest.mark.django_db
+class TestMasterProcedureViews(APITestCase,
+                               BaseCRUDViewTest,
+                               BaseDestroyWithUnarchivedRelationsViewTest,
+                               BaseUpdateWithoutRelationsViewTest,
+                               BaseUpdateWithRelationsViewTest,
+                               BaseUpdateDoNothingViewTest):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.basename = 'master-procedure'
+        cls.model = MasterProcedure
+        cls.serializer = MasterProcedureSerializer
+        cls.instance = mixer.blend(cls.model)
+        cls.instance_data = {
+            'coefficient': cls.instance.coefficient
+        }
+        cls.instance_with_relation = mixer.blend(cls.model)
+        mixer.blend(PurchaseProcedure, procedure=cls.instance_with_relation)
+        cls.data = {
+            'employee': mixer.blend(Employee).id,
+            'procedure': mixer.blend(Procedure).id,
+            'price': '12000.00',
+            'coefficient': '0.4'
+        }
+        cls.update_data = {
+            'employee': mixer.blend(Employee).id,
+            'procedure': mixer.blend(Procedure).id,
+            'price': '9990.00',
+            'coefficient': '0.8'
+        }
         cls.relations_queryset = cls.instance_with_relation.purchases.all()
