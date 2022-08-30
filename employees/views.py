@@ -36,8 +36,8 @@ class EmployeeViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            id = EmployeeService(self.get_object()).destroy()
-            return Response({'id': id}, status.HTTP_204_NO_CONTENT)
+            EmployeeService(self.get_object()).destroy()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
 
@@ -62,7 +62,7 @@ class MasterProcedureViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            id = MasterProcedureService(self.get_object()).destroy()
-            return Response({'id': id}, status.HTTP_204_NO_CONTENT)
+            MasterProcedureService(self.get_object()).destroy()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_400_BAD_REQUEST)
