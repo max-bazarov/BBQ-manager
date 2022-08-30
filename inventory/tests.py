@@ -15,7 +15,7 @@ from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
 from objects.models import Object
 from purchases.models import UsedMaterial
 
-from .models import Material, MaterialUnits
+from .models import Material, MaterialUnits, ProductMaterial
 from .serializers import MaterialSerializer
 from .services import MaterialService
 
@@ -33,12 +33,11 @@ class TestMaterialService(TestCase,
         super().setUpClass()
         cls.instance = mixer.blend(cls.model)
         cls.instance_with_relation = mixer.blend(cls.model)
-        mixer.blend(UsedMaterial, material=cls.instance_with_relation)
-        cls.relations_queryset = cls.instance_with_relation.uses.all()
+        mixer.blend(ProductMaterial, material=cls.instance_with_relation)
+        cls.relations_queryset = cls.instance_with_relation.products.all()
         cls.data = {
             'name': 'some material',
             'unit': MaterialUnits.GRAMMS.value,
-            'price': '1.00',
             'object': cls.instance.object.id
         }
         cls.invalid_data = {'price': 'test'}
@@ -65,14 +64,12 @@ class TestMaterialView(APITestCase,
 
         cls.update_data = {
             'name': 'Hair Color 1',
-            'price': '1.11',
             'unit': MaterialUnits.GRAMMS.value,
             'object': cls.object.id
         }
         cls.nested_url = reverse('object-material', args=[cls.object.id])
         cls.data = {
             'name': 'Hair Color',
-            'price': '1.11',
             'unit': MaterialUnits.GRAMMS.value,
             'object': cls.object.id
         }
@@ -81,7 +78,7 @@ class TestMaterialView(APITestCase,
             'name': cls.instance.name
         }
         cls.instance_with_relation = mixer.blend(Material)
-        mixer.blend(UsedMaterial, material=cls.instance_with_relation)
+        mixer.blend(ProductMaterial, material=cls.instance_with_relation)
         cls.nested_queryset = cls.object.materials.all()
 
     def test_destroy_view_with_relation(self):
