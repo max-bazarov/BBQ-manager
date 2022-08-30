@@ -8,11 +8,6 @@ class Purchase(models.Model):
 
     time = models.DateTimeField(auto_now_add=True)
     is_paid_by_card = models.BooleanField(default=False)
-    procedures = models.ManyToManyField(
-        'employees.MasterProcedure',
-        related_name='purchases',
-        through='PurchaseProcedure'
-    )
 
 
 class PurchaseProcedure(models.Model):
@@ -26,14 +21,14 @@ class PurchaseProcedure(models.Model):
 
 class UsedMaterial(models.Model):
 
+    material = models.ForeignKey(
+        'inventory.ProductMaterial',
+        on_delete=models.PROTECT,
+        related_name='uses'
+    )
     procedure = models.ForeignKey(
         PurchaseProcedure,
         on_delete=models.CASCADE,
         related_name='materials',
-    )
-    material = models.ForeignKey(
-        'inventory.Material',
-        on_delete=models.DO_NOTHING,
-        related_name='uses'
     )
     amount = models.IntegerField(default=1)
