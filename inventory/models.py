@@ -44,7 +44,7 @@ class Stock(models.Model):
     material = models.ForeignKey(
         Material,
         on_delete=models.PROTECT,
-        related_name='stock'
+        related_name='stocks'
     )
     amount = models.IntegerField(default=1)
 
@@ -57,7 +57,7 @@ class ProductMaterial(models.Model):
     material = models.ForeignKey(
         Material,
         on_delete=models.PROTECT,
-        related_name='product_materials'
+        related_name='products'
     )
     price = models.DecimalField(
         max_digits=10,

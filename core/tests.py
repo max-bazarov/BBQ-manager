@@ -67,7 +67,6 @@ class BaseDestroyTestMixin(BaseTest):
 
 class BaseDestroyWithUnarchivedRelationsTestMixin(BaseTest):
     instance_with_relation: Model
-    relations_queryset: QuerySet
 
     def test_destroy_with_unarchived_relation(self):
         count = self.get_count()

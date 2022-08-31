@@ -6,8 +6,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
-                        BaseDestroyTestMixin,
+                        BaseCRUDViewTest, BaseDestroyTestMixin,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
+                        BaseDestroyWithUnarchivedRelationsViewTest,
                         BaseListNestedViewTest, BaseUpdateDoNothingViewTest,
                         BaseUpdateTestMixin,
                         BaseUpdateWithoutRelationsViewTest,
@@ -15,9 +16,10 @@ from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
 from objects.models import Object
 from purchases.models import UsedMaterial
 
-from .models import Material, MaterialUnits
-from .serializers import MaterialSerializer
-from .services import MaterialService
+from .models import Material, MaterialUnits, ProductMaterial, Stock
+from .serializers import (MaterialSerializer, ProductMaterialSerializer,
+                          StockSerializer)
+from .services import MaterialService, ProductMaterialService, StockService
 
 
 class TestMaterialService(TestCase,
@@ -33,12 +35,11 @@ class TestMaterialService(TestCase,
         super().setUpClass()
         cls.instance = mixer.blend(cls.model)
         cls.instance_with_relation = mixer.blend(cls.model)
-        mixer.blend(UsedMaterial, material=cls.instance_with_relation)
-        cls.relations_queryset = cls.instance_with_relation.uses.all()
+        mixer.blend(ProductMaterial, material=cls.instance_with_relation)
+        cls.relations_queryset = cls.instance_with_relation.products.all()
         cls.data = {
             'name': 'some material',
             'unit': MaterialUnits.GRAMMS.value,
-            'price': '1.00',
             'object': cls.instance.object.id
         }
         cls.invalid_data = {'price': 'test'}
@@ -65,14 +66,12 @@ class TestMaterialView(APITestCase,
 
         cls.update_data = {
             'name': 'Hair Color 1',
-            'price': '1.11',
             'unit': MaterialUnits.GRAMMS.value,
             'object': cls.object.id
         }
         cls.nested_url = reverse('object-material', args=[cls.object.id])
         cls.data = {
             'name': 'Hair Color',
-            'price': '1.11',
             'unit': MaterialUnits.GRAMMS.value,
             'object': cls.object.id
         }
@@ -81,7 +80,7 @@ class TestMaterialView(APITestCase,
             'name': cls.instance.name
         }
         cls.instance_with_relation = mixer.blend(Material)
-        mixer.blend(UsedMaterial, material=cls.instance_with_relation)
+        mixer.blend(ProductMaterial, material=cls.instance_with_relation)
         cls.nested_queryset = cls.object.materials.all()
 
     def test_destroy_view_with_relation(self):
@@ -91,3 +90,104 @@ class TestMaterialView(APITestCase,
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert count == self.model.objects.count()
+
+
+class TestStockService(TestCase,
+                       BaseCreateTestMixin,
+                       BaseDestroyTestMixin,
+                       BaseUpdateTestMixin):
+    model = Stock
+    service = StockService
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.instance = mixer.blend(cls.model)
+        cls.data = {
+            'price': '1.23',
+            'material': mixer.blend(Material).id
+        }
+        cls.update_data = {
+            'price': '2.28',
+            'material': mixer.blend(Material).id
+        }
+        cls.invalid_data = {
+            'material': 'hahahahha funny'
+        }
+
+
+@pytest.mark.django_db
+class TestStockView(APITestCase, BaseCRUDViewTest):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.serializer = StockSerializer
+        cls.model = Stock
+        cls.basename = 'stock'
+        cls.data = {
+            'price': '1.23',
+            'material': mixer.blend(Material).id
+        }
+        cls.update_data = {
+            'price': '2.28',
+            'material': mixer.blend(Material).id
+        }
+        cls.instance = mixer.blend(Stock)
+
+
+class TestProductMaterialService(TestCase,
+                                 BaseCreateTestMixin,
+                                 BaseUpdateTestMixin,
+                                 BaseDestroyTestMixin,
+                                 BaseDestroyWithUnarchivedRelationsTestMixin,):
+
+    model = ProductMaterial
+    service = ProductMaterialService
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.instance = mixer.blend(cls.model)
+        cls.instance_with_relation = mixer.blend(cls.model)
+        mixer.blend(UsedMaterial, material=cls.instance_with_relation)
+        cls.relations_queryset = cls.instance_with_relation.materials.all()
+        cls.data = {
+            'material': mixer.blend(Material).id,
+            'price': '1.23'
+        }
+        cls.invalid_data = {'material': 'test'}
+        cls.update_data = {
+            'price': '2.28'
+        }
+
+
+@pytest.mark.django_db
+class TestProductMaterialView(APITestCase,
+                              BaseCRUDViewTest,
+                              BaseDestroyWithUnarchivedRelationsViewTest,
+                              BaseUpdateWithoutRelationsViewTest,
+                              BaseUpdateWithRelationsViewTest,
+                              BaseUpdateDoNothingViewTest,
+                              ):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.model = ProductMaterial
+        cls.serializer = ProductMaterialSerializer
+        cls.basename = 'product-material'
+        cls.instance = mixer.blend(cls.model)
+        cls.instance_data = {
+            'archived': cls.instance.archived
+        }
+        cls.data = {
+            'material': mixer.blend(Material).id,
+            'price': '1.23'
+        }
+        cls.update_data = {
+            'material': mixer.blend(Material).id,
+            'price': '1.23'
+        }
+        cls.instance_with_relation = mixer.blend(cls.model)
+        mixer.blend(UsedMaterial, material=cls.instance_with_relation)
