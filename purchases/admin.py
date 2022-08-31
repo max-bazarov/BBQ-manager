@@ -15,6 +15,7 @@ class PurchaseAdmin(admin.ModelAdmin):
         ProceduresInLineAdmin,
     ]
 
+
 @admin.register(PurchaseProcedure)
 class PurchaseProcedureAdmin(admin.ModelAdmin):
     list_display = ('id', 'purchase', 'procedure')
