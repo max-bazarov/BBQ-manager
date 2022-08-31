@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from inventory.models import Material, Stock, ProductMaterial
+from inventory.models import Material, ProductMaterial, Stock
 
 
 class MaterialSerializer(serializers.ModelSerializer):

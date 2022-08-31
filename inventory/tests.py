@@ -6,8 +6,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
-                        BaseDestroyTestMixin,
+                        BaseCRUDViewTest, BaseDestroyTestMixin,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
+                        BaseDestroyWithUnarchivedRelationsViewTest,
                         BaseListNestedViewTest, BaseUpdateDoNothingViewTest,
                         BaseUpdateTestMixin,
                         BaseUpdateWithoutRelationsViewTest,
@@ -16,8 +17,9 @@ from objects.models import Object
 from purchases.models import UsedMaterial
 
 from .models import Material, MaterialUnits, ProductMaterial, Stock
-from .serializers import MaterialSerializer
-from .services import MaterialService, StockService, ProductMaterialService
+from .serializers import (MaterialSerializer, ProductMaterialSerializer,
+                          StockSerializer)
+from .services import MaterialService, ProductMaterialService, StockService
 
 
 class TestMaterialService(TestCase,
@@ -114,11 +116,31 @@ class TestStockService(TestCase,
         }
 
 
+@pytest.mark.django_db
+class TestStockView(APITestCase, BaseCRUDViewTest):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.serializer = StockSerializer
+        cls.model = Stock
+        cls.basename = 'stock'
+        cls.data = {
+            'price': '1.23',
+            'material': mixer.blend(Material).id
+        }
+        cls.update_data = {
+            'price': '2.28',
+            'material': mixer.blend(Material).id
+        }
+        cls.instance = mixer.blend(Stock)
+
+
 class TestProductMaterialService(TestCase,
                                  BaseCreateTestMixin,
                                  BaseUpdateTestMixin,
                                  BaseDestroyTestMixin,
-                                 BaseDestroyWithUnarchivedRelationsTestMixin):
+                                 BaseDestroyWithUnarchivedRelationsTestMixin,):
 
     model = ProductMaterial
     service = ProductMaterialService
@@ -138,3 +160,34 @@ class TestProductMaterialService(TestCase,
         cls.update_data = {
             'price': '2.28'
         }
+
+
+@pytest.mark.django_db
+class TestProductMaterialView(APITestCase,
+                              BaseCRUDViewTest,
+                              BaseDestroyWithUnarchivedRelationsViewTest,
+                              BaseUpdateWithoutRelationsViewTest,
+                              BaseUpdateWithRelationsViewTest,
+                              BaseUpdateDoNothingViewTest,
+                              ):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.model = ProductMaterial
+        cls.serializer = ProductMaterialSerializer
+        cls.basename = 'product-material'
+        cls.instance = mixer.blend(cls.model)
+        cls.instance_data = {
+            'archived': cls.instance.archived
+        }
+        cls.data = {
+            'material': mixer.blend(Material).id,
+            'price': '1.23'
+        }
+        cls.update_data = {
+            'material': mixer.blend(Material).id,
+            'price': '1.23'
+        }
+        cls.instance_with_relation = mixer.blend(cls.model)
+        mixer.blend(UsedMaterial, material=cls.instance_with_relation)

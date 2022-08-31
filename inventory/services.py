@@ -1,7 +1,8 @@
 from core.services import BaseService
 
-from .models import Material, Stock, ProductMaterial
-from .serializers import MaterialSerializer, StockSerializer, ProductMaterialSerializer
+from .models import Material, ProductMaterial, Stock
+from .serializers import (MaterialSerializer, ProductMaterialSerializer,
+                          StockSerializer)
 
 
 class MaterialService(BaseService):
