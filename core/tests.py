@@ -1,3 +1,4 @@
+from itertools import permutations
 from typing import Any
 
 import funcy
@@ -502,3 +503,16 @@ class BaseUpdateDoNothingViewTest(BaseViewTest):
         assert count == self.get_count()
         assert self.model.objects.filter(id=self.instance.id).exists()
         assert not self.get_instance(self.instance.id).archived
+
+
+class BaseSearchViewTest(BaseViewTest):
+    search_fields: list[str]
+
+    def test_search(self):
+        search_fields = permutations(self.search_fields, len(self.search_fields))
+        for fields in search_fields:
+            url = reverse(self.basename + '-list') + '?search=' + '+'.join(fields)
+            response = self.client.get(url)
+
+            assert response.status_code == status.HTTP_200_OK
+            assert response.json()[0] == self.serializer(self.instance).data
