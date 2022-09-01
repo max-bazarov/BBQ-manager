@@ -142,19 +142,24 @@ class TestStockView(APITestCase,
         cls.nested_queryset = cls.object.materials.all()
         cls.nested_url_2 = reverse('object-stock-remain', args=[cls.object.id])
 
+    @staticmethod
+    def check_amount(expected_amount, response: list[dict]):
+        for item in response:
+            id, amount = item['id'], item['amount']
+            assert expected_amount[id] == amount
+
     def test_stock_remains_view(self):
         material = mixer.blend(Material, object=self.object)
+        mixer.blend(Stock, material=material, amount=100)
         response = self.client.get(self.nested_url_2)
         expected_amount = {
-
+            material.id: 100
         }
 
-
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.json()) == self.nested_queryset.count()
-        assert amount == 0
-
-
+        response_json = response.json()
+        assert len(response_json) == self.nested_queryset.count()
+        self.check_amount(expected_amount, response_json)
 
 
 class TestProductMaterialService(TestCase,
