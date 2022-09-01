@@ -62,8 +62,10 @@ class StockRemainGetView(APIView):
 
     def get(self, request, *args, **kwargs):
         obj_id = self.kwargs['object_id']
-        materials = Material.objects.filter(object=obj_id).\
-            annotate(amount=Sum('stocks__amount') - Sum('products__materials__amount'))
+        materials = Material.objects.filter(object=obj_id). \
+            annotate(amount=Sum('stocks__amount',
+                                distinct=True, default=0) - Sum('products__materials__amount',
+                                                                distinct=True, default=0))
         serializer = StockRemainSerializer(materials, many=True)
         return Response(serializer.data)
 
