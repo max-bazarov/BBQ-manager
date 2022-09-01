@@ -14,7 +14,7 @@ from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
                         BaseUpdateWithoutRelationsViewTest,
                         BaseUpdateWithRelationsViewTest)
 from objects.models import Object
-from purchases.models import UsedMaterial
+from purchases.models import UsedMaterial, PurchaseProcedure
 
 from .models import Material, MaterialUnits, ProductMaterial, Stock
 from .serializers import (MaterialSerializer, ProductMaterialSerializer,
@@ -140,7 +140,7 @@ class TestStockView(APITestCase,
         }
         cls.instance = mixer.blend(Stock)
         cls.nested_queryset = cls.object.materials.all()
-        cls.nested_url_2 = reverse('object-stock-remain', args=[cls.object.id])
+        cls.url_for_stock_remains = reverse('object-stock-remain', args=[cls.object.id])
 
     @staticmethod
     def check_amount(expected_amount, response: list[dict]):
@@ -148,12 +148,109 @@ class TestStockView(APITestCase,
             id, amount = item['id'], item['amount']
             assert expected_amount[id] == amount
 
-    def test_stock_remains_view(self):
+    def test_stock_remains_with_anything_view(self):
+        """This test for situation when we dont have materials in stock and UsedMaterials"""
+        material = mixer.blend(Material, object=self.object)
+        response = self.client.get(self.url_for_stock_remains)
+        expected_amount = {
+            material.id: 0
+        }
+
+        assert response.status_code == status.HTTP_200_OK
+        response_json = response.json()
+        assert len(response_json) == self.nested_queryset.count()
+        self.check_amount(expected_amount, response_json)
+
+    def test_stock_remains_with_stock_view(self):
+        """This test for situation when we have materials in stock"""
         material = mixer.blend(Material, object=self.object)
         mixer.blend(Stock, material=material, amount=100)
-        response = self.client.get(self.nested_url_2)
+        response = self.client.get(self.url_for_stock_remains)
         expected_amount = {
             material.id: 100
+        }
+
+        assert response.status_code == status.HTTP_200_OK
+        response_json = response.json()
+        assert len(response_json) == self.nested_queryset.count()
+        self.check_amount(expected_amount, response_json)
+
+    def test_stock_remains_with_stock_view(self):
+        """This test for clasic situation"""
+        material = mixer.blend(Material, object=self.object)
+        mixer.blend(Stock, material=material, amount=100)
+        mixer.blend(UsedMaterial, material=mixer.blend(ProductMaterial,
+                                                       material=material), amount=10)
+        response = self.client.get(self.url_for_stock_remains)
+        expected_amount = {
+            material.id: 90
+        }
+
+        assert response.status_code == status.HTTP_200_OK
+        response_json = response.json()
+        assert len(response_json) == self.nested_queryset.count()
+        self.check_amount(expected_amount, response_json)
+
+    def test_stock_remains_with_multiple_stock_view(self):
+        """This test for situation when we have multiple stock materials of the same Material id """
+        material = mixer.blend(Material, object=self.object)
+        mixer.blend(Stock, material=material, amount=10)
+        mixer.blend(Stock, material=material, amount=30)
+        response = self.client.get(self.url_for_stock_remains)
+        expected_amount = {
+            material.id: 40
+        }
+
+        assert response.status_code == status.HTTP_200_OK
+        response_json = response.json()
+        assert len(response_json) == self.nested_queryset.count()
+        self.check_amount(expected_amount, response_json)
+
+    def test_stock_remains_with_another_material_view(self):
+        """This test for situation when we have another material in UsedMaterials"""
+        material = mixer.blend(Material, object=self.object)
+        mixer.blend(Stock, material=material, amount=10)
+        mixer.blend(UsedMaterial, material=mixer.blend(ProductMaterial,
+                                                       material=mixer.blend(Material)), amount=30)
+        response = self.client.get(self.url_for_stock_remains)
+        expected_amount = {
+            material.id: 10
+        }
+
+        assert response.status_code == status.HTTP_200_OK
+        response_json = response.json()
+        assert len(response_json) == self.nested_queryset.count()
+        self.check_amount(expected_amount, response_json)
+
+    def test_stock_remains_with_multiple_used_material_view(self):
+        """This test for situation when we have multiple material
+        in UsedMaterials of the same Material id"""
+        material = mixer.blend(Material, object=self.object)
+        mixer.blend(Stock, material=material, amount=100)
+        mixer.blend(UsedMaterial, material=mixer.blend(ProductMaterial,
+                                                       material=material), amount=10)
+        mixer.blend(UsedMaterial, material=mixer.blend(ProductMaterial,
+                                                       material=material), amount=30)
+        response = self.client.get(self.url_for_stock_remains)
+        expected_amount = {
+            material.id: 60
+        }
+
+        assert response.status_code == status.HTTP_200_OK
+        response_json = response.json()
+        assert len(response_json) == self.nested_queryset.count()
+        self.check_amount(expected_amount, response_json)
+
+    def test_stock_remains_with_multiple_used_material_for_the_same_procedure_view(self):
+        material = mixer.blend(Material, object=self.object)
+        mixer.blend(Stock, material=material, amount=100)
+        product_material = mixer.blend(ProductMaterial, material=material)
+        purchase_procedure = mixer.blend(PurchaseProcedure)
+        mixer.blend(UsedMaterial, amount=1, pourchase=purchase_procedure, material=product_material)
+        mixer.blend(UsedMaterial, amount=1, pourchase=purchase_procedure, material=product_material)
+        response = self.client.get(self.url_for_stock_remains)
+        expected_amount = {
+            material.id: 98
         }
 
         assert response.status_code == status.HTTP_200_OK

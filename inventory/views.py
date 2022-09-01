@@ -62,7 +62,7 @@ class StockRemainGetView(APIView):
         materials = Material.objects.filter(object=obj_id). \
             annotate(amount=Sum('stocks__amount',
                                 distinct=True, default=0) - Sum('products__materials__amount',
-                                                                distinct=True, default=0))
+                                                                default=0))
         serializer = StockRemainSerializer(materials, many=True)
         return Response(serializer.data)
 
@@ -79,9 +79,6 @@ class ProductMaterialCreateListViewSet(ListCreateAPIView):
     def get_queryset(self):
         obj_id = self.kwargs['object_id']
         return Stock.objects.filter(material__object=obj_id)
-
-    def perform_create(self, serializer):
-        serializer.save(material__object_id=self.kwargs['object_id'])
 
 
 class ProductMaterialViewSet(ModelViewSet):

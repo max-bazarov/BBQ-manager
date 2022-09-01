@@ -8,5 +8,7 @@ router.register('objects', ObjectViewSet, 'object')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('objects/<int:object_id>/departments/', DepartemntListCreateView.as_view(), name='department'),
+    path('objects/<int:object_id>/departments/',
+         DepartemntListCreateView.as_view(),
+         name='department'),
 ]

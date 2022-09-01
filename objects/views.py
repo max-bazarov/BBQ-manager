@@ -12,6 +12,6 @@ class ObjectViewSet(ModelViewSet):
 
 class DepartemntListCreateView(ListCreateAPIView):
     serializer_class = DepartmentSerializer
-    
+
     def get_queryset(self):
         return Department.objects.filter(object_id=self.kwargs['object_id'])
