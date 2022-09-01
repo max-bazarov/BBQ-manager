@@ -1,13 +1,15 @@
-from django.db.models import Sum, Count, F
+from django.db.models import Sum
 from rest_framework import status
-from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from inventory.models import Material, ProductMaterial, Stock
 from inventory.serializers import (MaterialSerializer,
-                                   ProductMaterialSerializer, StockSerializer, StockRemainSerializer)
+                                   ProductMaterialSerializer,
+                                   StockSerializer,
+                                   StockRemainSerializer)
 
 from .services import MaterialService, ProductMaterialService
 

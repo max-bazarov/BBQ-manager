@@ -2,7 +2,10 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (MaterialCreateListViewSet, MaterialViewSet,
-                    ProductMaterialViewSet, StockViewSet, StockCreateListViewSet, StockRemainGetView,
+                    ProductMaterialViewSet,
+                    StockViewSet,
+                    StockCreateListViewSet,
+                    StockRemainGetView,
                     ProductMaterialCreateListViewSet)
 
 router = DefaultRouter()
