@@ -117,11 +117,16 @@ class TestStockService(TestCase,
 
 
 @pytest.mark.django_db
-class TestStockView(APITestCase, BaseCRUDViewTest):
+class TestStockView(APITestCase,
+                    BaseCRUDViewTest,
+                    BaseCreateNestedViewTest,
+                    BaseListNestedViewTest):
 
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        cls.object = mixer.blend(Object)
+        cls.nested_url = reverse('object-stock', args=[cls.object.id])
         cls.serializer = StockSerializer
         cls.model = Stock
         cls.basename = 'stock'
@@ -134,6 +139,7 @@ class TestStockView(APITestCase, BaseCRUDViewTest):
             'material': mixer.blend(Material).id
         }
         cls.instance = mixer.blend(Stock)
+        cls.nested_queryset = cls.object.materials.all()
 
 
 class TestProductMaterialService(TestCase,
@@ -165,6 +171,8 @@ class TestProductMaterialService(TestCase,
 @pytest.mark.django_db
 class TestProductMaterialView(APITestCase,
                               BaseCRUDViewTest,
+                              BaseCreateNestedViewTest,
+                              BaseListNestedViewTest,
                               BaseDestroyWithUnarchivedRelationsViewTest,
                               BaseUpdateWithoutRelationsViewTest,
                               BaseUpdateWithRelationsViewTest,
@@ -177,6 +185,8 @@ class TestProductMaterialView(APITestCase,
         cls.model = ProductMaterial
         cls.serializer = ProductMaterialSerializer
         cls.basename = 'product-material'
+        cls.object = mixer.blend(Object)
+        cls.nested_url = reverse('object-product-material', args=[cls.object.id])
         cls.instance = mixer.blend(cls.model)
         cls.instance_data = {
             'archived': cls.instance.archived
@@ -191,3 +201,4 @@ class TestProductMaterialView(APITestCase,
         }
         cls.instance_with_relation = mixer.blend(cls.model)
         mixer.blend(UsedMaterial, material=cls.instance_with_relation)
+        cls.nested_queryset = cls.object.materials.all()
