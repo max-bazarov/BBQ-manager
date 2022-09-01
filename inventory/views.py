@@ -1,6 +1,6 @@
 from django.db.models import Sum
 from rest_framework import status
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -46,16 +46,13 @@ class MaterialViewSet(ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class StockCreateListViewSet(ListCreateAPIView):
+class StockCreateListViewSet(ListAPIView):
     serializer_class = StockSerializer
     swagger_tags = ['stocks']
 
     def get_queryset(self):
         obj_id = self.kwargs['object_id']
         return Stock.objects.filter(material__object=obj_id)
-
-    def perform_create(self, serializer):
-        serializer.save(material__object_id=self.kwargs['object_id'])
 
 
 class StockRemainGetView(APIView):
