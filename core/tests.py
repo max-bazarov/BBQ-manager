@@ -510,8 +510,9 @@ class BaseSearchViewTest(BaseViewTest):
 
     def test_search(self):
         search_fields = permutations(self.search_fields, len(self.search_fields))
+        reversed_url = reverse(self.basename + '-list') + '?search='
         for fields in search_fields:
-            url = reverse(self.basename + '-list') + '?search=' + '+'.join(fields)
+            url = reversed_url + '+'.join(fields)
             response = self.client.get(url)
 
             assert response.status_code == status.HTTP_200_OK
