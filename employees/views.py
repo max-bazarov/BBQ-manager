@@ -18,9 +18,6 @@ class EmployeeCreateListViewSet(ListCreateAPIView):
         obj_id = self.kwargs['object_id']
         return Employee.objects.filter(object=obj_id)
 
-    def perform_create(self, serializer):
-        serializer.save(object_id=self.kwargs['object_id'])
-
 
 class EmployeeViewSet(ModelViewSet):
     queryset = Employee.objects.all()

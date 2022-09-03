@@ -17,11 +17,6 @@ class Material(models.Model):
         max_length=3,
         choices=MaterialUnits.choices
     )
-    price = models.DecimalField(
-        'material_price',
-        max_digits=10,
-        decimal_places=2,
-    )
     archived = models.BooleanField(
         'is_archived',
         default=False
@@ -34,3 +29,41 @@ class Material(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Stock(models.Model):
+
+    class Meta:
+        db_table = 'stocks'
+
+    price = models.DecimalField(
+        'material_price',
+        max_digits=10,
+        decimal_places=2,
+    )
+    material = models.ForeignKey(
+        Material,
+        on_delete=models.PROTECT,
+        related_name='stocks'
+    )
+    amount = models.IntegerField(default=1)
+
+
+class ProductMaterial(models.Model):
+
+    class Meta:
+        db_table = 'product_material'
+
+    material = models.ForeignKey(
+        Material,
+        on_delete=models.PROTECT,
+        related_name='products'
+    )
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+    )
+    archived = models.BooleanField(
+        'is_archived',
+        default=False
+    )
