@@ -25,15 +25,17 @@ class PurchaseProcedure(models.Model):
 
 
 class UsedMaterial(models.Model):
+    class Meta:
+        db_table = 'used_materials'
 
+    material = models.ForeignKey(
+        'inventory.ProductMaterial',
+        on_delete=models.PROTECT,
+        related_name='materials'
+    )
     procedure = models.ForeignKey(
         PurchaseProcedure,
         on_delete=models.CASCADE,
-        related_name='materials',
-    )
-    material = models.ForeignKey(
-        'inventory.Material',
-        on_delete=models.DO_NOTHING,
-        related_name='uses'
+        related_name='procedures',
     )
     amount = models.IntegerField(default=1)

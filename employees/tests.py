@@ -42,7 +42,6 @@ class TestEmployeeService(TestCase,
             'first_name': 'Yakov',
             'last_name': 'Yakov',
             'position': 'CTO',
-            'coefficient': '0.82',
             'object': cls.instance.object.id
         }
         cls.invalid_data = {
@@ -81,7 +80,6 @@ class TestEmployeeViews(APITestCase,
             'first_name': 'Yakovv',
             'last_name': 'Varnaevv',
             'position': 'junior developer',
-            'coefficient': 0.5,
             'object': cls.object.id
         }
         cls.nested_url = reverse('object-employee', args=[cls.object.id])
@@ -89,7 +87,6 @@ class TestEmployeeViews(APITestCase,
             'position': 'senior developer',
             'first_name': 'Yakovv',
             'last_name': 'Varnaevv',
-            'coefficient': 0.5,
             'object': cls.object.id
         }
         cls.instance_with_relation = mixer.blend(cls.model)
@@ -117,16 +114,15 @@ class TestMasterProcedureService(TestCase,
             'employee': mixer.blend(Employee).id,
             'procedure': mixer.blend(Procedure).id,
             'price': '12000.00',
-            'coefficient': 0.4
+            'coefficient': '0.4'
         }
         cls.update_data = {
             'employee': mixer.blend(Employee).id,
             'procedure': mixer.blend(Procedure).id,
             'price': '9990.00',
-            'coefficient': 0.8
+            'coefficient': '0.8'
         }
         cls.invalid_data = {'procedure': 'test'}
-        cls.relations_queryset = cls.instance_with_relation.purchases.all()
 
 
 @pytest.mark.django_db
@@ -162,4 +158,3 @@ class TestMasterProcedureViews(APITestCase,
             'price': '9990.00',
             'coefficient': '0.8'
         }
-        cls.relations_queryset = cls.instance_with_relation.purchases.all()
