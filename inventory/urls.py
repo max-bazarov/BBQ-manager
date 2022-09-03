@@ -14,11 +14,6 @@ router.register('materials', MaterialViewSet, 'material')
 router.register('stocks', StockViewSet, 'stock')
 router.register('product-materials', ProductMaterialViewSet, 'product-material')
 
-
-class ProducMaterialCreateListViewSet:
-    pass
-
-
 urlpatterns = [
     path('', include(router.urls)),
     path(
