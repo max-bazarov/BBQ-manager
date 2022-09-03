@@ -25,6 +25,8 @@ class PurchaseProcedure(models.Model):
 
 
 class UsedMaterial(models.Model):
+    class Meta:
+        db_table = 'used_materials'
 
     material = models.ForeignKey(
         'inventory.ProductMaterial',
