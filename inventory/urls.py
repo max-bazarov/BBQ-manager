@@ -11,7 +11,7 @@ from .views import (MaterialCreateListViewSet, MaterialViewSet,
 router = DefaultRouter()
 
 router.register('materials', MaterialViewSet, 'material')
-router.register('stock', StockViewSet, 'stock')
+router.register('stocks', StockViewSet, 'stock')
 router.register('product-materials', ProductMaterialViewSet, 'product-material')
 
 
@@ -22,18 +22,18 @@ class ProducMaterialCreateListViewSet:
 urlpatterns = [
     path('', include(router.urls)),
     path(
-        'object/<int:object_id>/materials/',
+        'objects/<int:object_id>/materials/',
         MaterialCreateListViewSet.as_view(),
         name='object-material'
     ),
-    path('object/<int:object_id>/stock/',
+    path('objects/<int:object_id>/stock/',
          StockCreateListViewSet.as_view(),
          name='object-stock'
          ),
-    path('object/<int:object_id>/stock/remain/',
+    path('objects/<int:object_id>/stock/remain/',
          StockRemainGetView.as_view(),
          name='object-stock-remain'),
-    path('object/<int:object_id>/product-material/',
+    path('objects/<int:object_id>/product-material/',
          ProductMaterialCreateListViewSet.as_view(),
          name='object-product-material'),
 ]

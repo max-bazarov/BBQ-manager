@@ -19,7 +19,7 @@ class StockRemainSerializer(serializers.ModelSerializer):
     amount = serializers.IntegerField()
 
     class Meta:
-        fields = ('id', 'name', 'amount', 'unit')
+        fields = '__all__'
         model = Material
 
 
