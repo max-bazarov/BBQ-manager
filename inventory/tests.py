@@ -12,7 +12,8 @@ from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
                         BaseListNestedViewTest, BaseUpdateDoNothingViewTest,
                         BaseUpdateTestMixin,
                         BaseUpdateWithoutRelationsViewTest,
-                        BaseUpdateWithRelationsViewTest)
+                        BaseUpdateWithRelationsViewTest,
+                        BaseSearchViewTest)
 from objects.models import Object
 from purchases.models import UsedMaterial, PurchaseProcedure
 
@@ -54,7 +55,8 @@ class TestMaterialView(APITestCase,
                        BaseListNestedViewTest,
                        BaseUpdateWithoutRelationsViewTest,
                        BaseUpdateWithRelationsViewTest,
-                       BaseUpdateDoNothingViewTest):
+                       BaseUpdateDoNothingViewTest,
+                       BaseSearchViewTest):
     model = Material
     basename = 'material'
 
@@ -82,6 +84,7 @@ class TestMaterialView(APITestCase,
         cls.instance_with_relation = mixer.blend(Material)
         mixer.blend(ProductMaterial, material=cls.instance_with_relation)
         cls.nested_queryset = cls.object.materials.all()
+        cls.search_fields = ['name']
 
     def test_destroy_view_with_relation(self):
         count = self.model.objects.count()
