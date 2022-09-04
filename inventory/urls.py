@@ -21,14 +21,14 @@ urlpatterns = [
         MaterialCreateListViewSet.as_view(),
         name='object-material'
     ),
-    path('objects/<int:object_id>/stock/',
+    path('objects/<int:object_id>/stocks/',
          StockCreateListViewSet.as_view(),
          name='object-stock'
          ),
-    path('objects/<int:object_id>/stock/remain/',
+    path('objects/<int:object_id>/stocks/remain/',
          StockRemainGetView.as_view(),
          name='object-stock-remain'),
-    path('objects/<int:object_id>/product-material/',
+    path('objects/<int:object_id>/product-materials/',
          ProductMaterialCreateListViewSet.as_view(),
          name='object-product-material'),
 ]
