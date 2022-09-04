@@ -10,7 +10,7 @@ from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
                         BaseDestroyWithArchivedRelationsViewTest,
                         BaseDestroyWithUnarchivedRelationsTestMixin,
                         BaseDestroyWithUnarchivedRelationsViewTest,
-                        BaseListNestedViewTest, BaseUpdateDoNothingViewTest,
+                        BaseListNestedViewTest, BaseSearchViewTest, BaseUpdateDoNothingViewTest,
                         BaseUpdateTestMixin,
                         BaseUpdateWithoutRelationsViewTest,
                         BaseUpdateWithRelationsViewTest)
@@ -57,13 +57,15 @@ class TestEmployeeService(TestCase,
 
 @pytest.mark.django_db
 class TestEmployeeViews(APITestCase,
+                        BaseCRUDViewTest,
                         BaseCreateNestedViewTest,
                         BaseListNestedViewTest,
                         BaseDestroyWithUnarchivedRelationsViewTest,
                         BaseDestroyWithArchivedRelationsViewTest,
                         BaseUpdateWithoutRelationsViewTest,
                         BaseUpdateWithRelationsViewTest,
-                        BaseUpdateDoNothingViewTest):
+                        BaseUpdateDoNothingViewTest,
+                        BaseSearchViewTest):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -89,6 +91,7 @@ class TestEmployeeViews(APITestCase,
             'last_name': 'Varnaevv',
             'object': cls.object.id
         }
+        cls.search_fields = [cls.instance.first_name, cls.instance.last_name]
         cls.instance_with_relation = mixer.blend(cls.model)
         mixer.blend(MasterProcedure, employee=cls.instance_with_relation)
         cls.relations_queryset = cls.instance_with_relation.procedures.all()
