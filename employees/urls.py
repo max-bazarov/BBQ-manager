@@ -12,7 +12,7 @@ router.register('master-procedures', MasterProcedureViewSet, 'master-procedure')
 urlpatterns = [
     path('', include(router.urls)),
     path(
-        'object/<int:object_id>/employees/',
+        'objects/<int:object_id>/employees/',
         EmployeeCreateListViewSet.as_view(),
         name='object-employee'
     ),
