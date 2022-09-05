@@ -508,11 +508,13 @@ class BaseSearchViewTest(BaseViewTest):
     search_fields: list[str]
 
     def test_search(self):
+        serializer = self.serializers.get('list', self.serializer)
         search_fields = permutations(self.search_fields, len(self.search_fields))
         reversed_url = reverse(self.basename + '-list') + '?search='
         for fields in search_fields:
             url = reversed_url + '+'.join(fields)
-            response = self.client.get(url)
+            response = self.client.get(url, format='json')
+            print(response.json())
 
             assert response.status_code == status.HTTP_200_OK
-            assert response.json()[0] == self.serializer(self.instance).data
+            assert response.json()[0] == serializer(self.instance).data
