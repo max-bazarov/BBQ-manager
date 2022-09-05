@@ -134,7 +134,8 @@ class TestMasterProcedureViews(APITestCase,
                                BaseDestroyWithUnarchivedRelationsViewTest,
                                BaseUpdateWithoutRelationsViewTest,
                                BaseUpdateWithRelationsViewTest,
-                               BaseUpdateDoNothingViewTest):
+                               BaseUpdateDoNothingViewTest,
+                               BaseSearchViewTest):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -161,3 +162,8 @@ class TestMasterProcedureViews(APITestCase,
             'price': '9990.00',
             'coefficient': '0.8'
         }
+        cls.search_fields = [
+            cls.instance.procedure.name,
+            cls.instance.employee.first_name,
+            cls.instance.employee.last_name
+        ]
