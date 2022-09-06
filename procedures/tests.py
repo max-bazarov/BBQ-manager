@@ -11,7 +11,8 @@ from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
                         BaseDestroyWithUnarchivedRelationsViewTest,
                         BaseUpdateDoNothingViewTest, BaseUpdateTestMixin,
                         BaseUpdateWithoutRelationsViewTest,
-                        BaseUpdateWithRelationsViewTest)
+                        BaseUpdateWithRelationsViewTest,
+                        BaseSearchViewTest)
 from employees.models import MasterProcedure
 from objects.models import Department
 
@@ -54,7 +55,8 @@ class TestProcedureViews(APITestCase,
                          BaseDestroyWithArchivedRelationsViewTest,
                          BaseUpdateWithoutRelationsViewTest,
                          BaseUpdateWithRelationsViewTest,
-                         BaseUpdateDoNothingViewTest):
+                         BaseUpdateDoNothingViewTest,
+                         BaseSearchViewTest):
     model = Procedure
     serializer = ProcedureSerializer
     basename = 'procedure'
@@ -75,6 +77,7 @@ class TestProcedureViews(APITestCase,
             'name': 'new test',
             'department': cls.department.id
         }
+        cls.search_fields = ['name']
         cls.instance_with_relation = mixer.blend(cls.model)
         mixer.blend(MasterProcedure, procedure=cls.instance_with_relation)
         cls.relations_queryset = cls.instance_with_relation.employees.all()
