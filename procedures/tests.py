@@ -77,7 +77,7 @@ class TestProcedureViews(APITestCase,
             'name': 'new test',
             'department': cls.department.id
         }
-        cls.search_fields = ['name']
+        cls.search_fields = [cls.instance.name, cls.instance.department.name]
         cls.instance_with_relation = mixer.blend(cls.model)
         mixer.blend(MasterProcedure, procedure=cls.instance_with_relation)
         cls.relations_queryset = cls.instance_with_relation.employees.all()
