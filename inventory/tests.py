@@ -84,7 +84,7 @@ class TestMaterialView(APITestCase,
         cls.instance_with_relation = mixer.blend(Material)
         mixer.blend(ProductMaterial, material=cls.instance_with_relation)
         cls.nested_queryset = cls.object.materials.all()
-        cls.search_fields = ['name']
+        cls.search_fields = [cls.instance.name]
 
     def test_destroy_view_with_relation(self):
         count = self.model.objects.count()
