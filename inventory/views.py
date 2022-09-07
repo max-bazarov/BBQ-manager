@@ -4,6 +4,7 @@ from rest_framework.generics import ListCreateAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.filters import SearchFilter
 
 from inventory.models import Material, ProductMaterial, Stock
 from inventory.serializers import (MaterialSerializer,
@@ -17,6 +18,8 @@ from .services import MaterialService, ProductMaterialService
 class MaterialCreateListViewSet(ListCreateAPIView):
     serializer_class = MaterialSerializer
     swagger_tags = ['materials']
+    filter_backends = [SearchFilter]
+    search_fields = ['name']
 
     def get_queryset(self):
         obj_id = self.kwargs['object_id']
@@ -29,6 +32,8 @@ class MaterialCreateListViewSet(ListCreateAPIView):
 class MaterialViewSet(ModelViewSet):
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['name']
 
     def update(self, request, *args, **kwargs):
         try:
