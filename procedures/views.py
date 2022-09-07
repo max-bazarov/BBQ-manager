@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.filters import SearchFilter
 
 from procedures.services import ProcedureService
 
@@ -11,6 +12,8 @@ from .serializers import ProcedureSerializer
 class ProcedureViewSet(ModelViewSet):
     serializer_class = ProcedureSerializer
     queryset = Procedure.objects.all()
+    filter_backends = [SearchFilter]
+    search_fields = ['name', 'department__name']
 
     def update(self, request, *args, **kwargs):
         try:
