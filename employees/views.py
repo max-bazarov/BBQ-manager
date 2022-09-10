@@ -1,8 +1,10 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter
+from employees.filters import MasterProcedureFilter
 
 from employees.services import EmployeeService, MasterProcedureService
 
@@ -42,7 +44,8 @@ class EmployeeViewSet(ModelViewSet):
 
 class MasterProcedureViewSet(ModelViewSet):
     queryset = MasterProcedure.objects.all()
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    filterset_class = MasterProcedureFilter
     search_fields = ['procedure__name', 'employee__first_name', 'employee__last_name']
 
     def get_serializer_class(self):
