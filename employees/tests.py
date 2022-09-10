@@ -2,6 +2,7 @@ import pytest
 from django.test import TestCase
 from django.urls import reverse
 from mixer.backend.django import mixer
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 from core.tests import (BaseCreateNestedViewTest, BaseCreateTestMixin,
@@ -142,6 +143,7 @@ class TestMasterProcedureViews(APITestCase,
         super().setUpClass()
         cls.serializers = {'list': MasterProcedureListSerializer}
         cls.basename = 'master-procedure'
+        cls.base_url = reverse(f'{cls.basename}-list')
         cls.model = MasterProcedure
         cls.serializer = MasterProcedureSerializer
         cls.instance = mixer.blend(cls.model)
@@ -167,3 +169,11 @@ class TestMasterProcedureViews(APITestCase,
             cls.instance.employee.first_name,
             cls.instance.employee.last_name
         ]
+
+    def test_master_procedure_filter_by_employee(self):
+        response = self.client.get(self.base_url, {'employee': self.instance.employee.id})
+
+        assert response.status_code == status.HTTP_200_OK
+        response_json = response.json()
+
+        assert response_json == self.serializers['list']([self.instance], many=True).data
