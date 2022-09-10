@@ -19,7 +19,7 @@ from employees.models import MasterProcedure
 from objects.models import Department
 
 from .models import Procedure
-from .serializers import ProcedureSerializer
+from .serializers import ProcedureListSerializer, ProcedureSerializer
 from .services import ProcedureService
 
 
@@ -62,6 +62,9 @@ class TestProcedureViews(APITestCase,
     model = Procedure
     serializer = ProcedureSerializer
     basename = 'procedure'
+    serializers = {
+        'list': ProcedureListSerializer
+    }
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -93,4 +96,4 @@ class TestProcedureViews(APITestCase,
         assert len(response_json) == self.model.objects.filter(
             department__object_id=self.instance.department.object.id
         ).count()
-        assert response_json == self.serializer([self.instance], many=True).data
+        assert response_json == self.serializers['list']([self.instance], many=True).data

@@ -1,6 +1,4 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -13,7 +11,6 @@ from .models import Procedure
 from .serializers import ProcedureListSerializer, ProcedureSerializer
 
 
-@swagger_auto_schema(manual_parameters=[openapi.Parameter('object', openapi.IN_QUERY, type=openapi.TYPE_INTEGER)])
 class ProcedureViewSet(ModelViewSet):
     serializer_class = ProcedureSerializer
     queryset = Procedure.objects.all()
