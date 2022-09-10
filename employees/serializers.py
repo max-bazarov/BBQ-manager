@@ -12,6 +12,13 @@ class EmployeeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class EmployeeCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Employee
+        exclude = ('object',)
+
+
 class MasterProcedureSerializer(serializers.ModelSerializer):
 
     class Meta:

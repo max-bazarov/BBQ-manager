@@ -8,6 +8,7 @@ coreschema==0.0.4
 dill==0.3.5.1
 Django==4.1
 django-cors-headers==3.13.0
+django-filter==22.1
 django-service-objects==0.7.1
 djangorestframework==3.13.1
 drf-yasg==1.21.3
