@@ -90,5 +90,7 @@ class TestProcedureViews(APITestCase,
 
         assert response.status_code == status.HTTP_200_OK
         response_json = response.json()
-        assert len(response_json) == self.model.objects.filter(department__object_id=self.instance.department.object.id).count()
+        assert len(response_json) == self.model.objects.filter(
+            department__object_id=self.instance.department.object.id
+        ).count()
         assert response_json == self.serializer([self.instance], many=True).data
