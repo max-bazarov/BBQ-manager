@@ -1,7 +1,9 @@
 import pytest
 from django.test import TestCase
+from django.urls import reverse
 from mixer.backend.django import mixer
 from rest_framework.test import APITestCase
+from rest_framework import status
 
 from core.tests import (BaseCreateTestMixin, BaseCRUDViewTest,
                         BaseDestroyTestMixin,
@@ -64,6 +66,7 @@ class TestProcedureViews(APITestCase,
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        cls.base_url = reverse(f'{cls.basename}-list')
         cls.instance = mixer.blend(cls.model)
         cls.instance_data = {
             'name': cls.instance.name
@@ -81,3 +84,11 @@ class TestProcedureViews(APITestCase,
         cls.instance_with_relation = mixer.blend(cls.model)
         mixer.blend(MasterProcedure, procedure=cls.instance_with_relation)
         cls.relations_queryset = cls.instance_with_relation.employees.all()
+
+    def test_precedure_filter_by_obj_with_query_params(self):
+        response = self.client.get(self.base_url, {'object': self.instance.department.object.id})
+
+        assert response.status_code == status.HTTP_200_OK
+        response_json = response.json()
+        assert len(response_json) == self.model.objects.filter(department__object_id=self.instance.department.object.id).count()
+        assert response_json == self.serializer([self.instance], many=True).data

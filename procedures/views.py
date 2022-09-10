@@ -1,7 +1,9 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter
+from procedures.filters import ProcedureFilter
 
 from procedures.services import ProcedureService
 
@@ -12,8 +14,9 @@ from .serializers import ProcedureSerializer
 class ProcedureViewSet(ModelViewSet):
     serializer_class = ProcedureSerializer
     queryset = Procedure.objects.all()
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name', 'department__name']
+    filterset_class = ProcedureFilter
 
     def update(self, request, *args, **kwargs):
         try:
