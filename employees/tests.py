@@ -177,3 +177,11 @@ class TestMasterProcedureViews(APITestCase,
         response_json = response.json()
 
         assert response_json == self.serializers['list']([self.instance], many=True).data
+
+    def test_master_procedure_filter_by_procedure(self):
+        response = self.client.get(self.base_url, {'procedure': self.instance.procedure.id})
+
+        assert response.status_code == status.HTTP_200_OK
+        response_json = response.json()
+
+        assert response_json == self.serializers['list']([self.instance], many=True).data

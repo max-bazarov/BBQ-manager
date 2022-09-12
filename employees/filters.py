@@ -7,4 +7,4 @@ class MasterProcedureFilter(filters.FilterSet):
 
     class Meta:
         model = MasterProcedure
-        fields = ['employee']
+        fields = ['employee', 'procedure']

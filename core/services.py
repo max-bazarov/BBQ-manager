@@ -28,7 +28,6 @@ class BaseService:
         self._kwargs = kwargs
         self.partial = self._kwargs.get('partial', False)
         self.data = data
-        print(self.model.__name__, hasattr(self.model, 'archived'))
 
     def has_related(self) -> bool:
         if not self.related_name:
