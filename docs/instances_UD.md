@@ -1,5 +1,12 @@
 # Update and Delete instances
 
+## Table of Contents
+
+* [Short overview](#short-overview)
+   * [No UD, only archivation](#no-ud-only-archivation)
+      * [Exceptions:](#exceptions)
+      * [Algorithm:](#algorithm)
+
 ## Short overview
 
 This document describe how updates and deletions(UD further) should be managed in this project. This part of documentation is appliable to next models:
