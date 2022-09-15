@@ -8,6 +8,7 @@ class Purchase(models.Model):
 
     time = models.DateTimeField(auto_now_add=True)
     is_paid_by_card = models.BooleanField(default=False)
+    paid_to_employee = models.BooleanField(default=False)
     procedures = models.ManyToManyField(
         'employees.MasterProcedure',
         related_name='purchases',
