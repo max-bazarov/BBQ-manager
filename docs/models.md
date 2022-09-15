@@ -2,6 +2,20 @@
 
 ![alt text](https://github.com/Yakov-Varnaev/BBQ-manager/blob/main/docs/BBQ%20db.png?raw=true)
 
+<!--ts-->
+   * [Employee](#employee)
+   * [Procedure](#procedure)
+   * [Material](#material)
+   * [EmployeeProcedure](#employeeprocedure)
+   * [Purchase](#purchase)
+   * [PurchaseProcedure](#purchaseprocedure)
+   * [UsedMaterials](#usedmaterials)
+
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+<!-- Added by: maxbazarov, at: Wed 14 Sep 2022 20:48:39 MSK -->
+
+<!--te-->
+
 ## Employee
 Fields:
 - id
