@@ -8,8 +8,14 @@ In the end of the day manager should see how much money should saloon give to ma
 
 ## Run project locally
 
-- Clone this repo on your local machine
-- 
+- Clone repository to your computer
+- Change .env.dist to .env and fill it
+- Make sure you have Docker and Docker Compose installed 
+- Run project with `docker-compose up`
+- On first run you need to apply migrations with `docker-compose exec web python manage.py migrate`
+- Create superuser with `docker-compose exec web python manage.py createsuperuser`
+- Collect static with `docker-compose exec web python manage.py collectstatic`
+- Project is available at http://localhost:8000/
 
 ## Stack
 
