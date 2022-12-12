@@ -1,0 +1,24 @@
+[
+{
+  "model": "inventory.material",
+  "pk": 1,
+  "fields": {
+    "name": "Haircolor",
+    "unit": "GR",
+    "price": "5.00",
+    "archived": false,
+    "object": 1
+  }
+},
+{
+  "model": "inventory.material",
+  "pk": 2,
+  "fields": {
+    "name": "Haircolor red",
+    "unit": "GR",
+    "price": "7.00",
+    "archived": false,
+    "object": 1
+  }
+}
+]

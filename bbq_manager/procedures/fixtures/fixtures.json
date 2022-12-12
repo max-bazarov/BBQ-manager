@@ -1,0 +1,29 @@
+[
+{
+  "model": "procedures.procedure",
+  "pk": 1,
+  "fields": {
+    "name": "Haircut",
+    "archived": false,
+    "department": 1
+  }
+},
+{
+  "model": "procedures.procedure",
+  "pk": 2,
+  "fields": {
+    "name": "Haircut",
+    "archived": false,
+    "department": 2
+  }
+},
+{
+  "model": "procedures.procedure",
+  "pk": 3,
+  "fields": {
+    "name": "Nails",
+    "archived": false,
+    "department": 2
+  }
+}
+]
