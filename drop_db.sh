@@ -1,1 +1,0 @@
-psql -U postgres -h localhost -p 5432 -c 'drop schema "public" cascade; create schema "public";'
